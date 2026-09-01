@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&amp;family=Figtree:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#101a45;color:#eef4fb;font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  textarea{font-family:'Figtree',system-ui,sans-serif}
+  a{color:#54d8f0;text-decoration:none}
+  a:hover{color:#8ce6f7}
+  ::selection{background:#54d8f0;color:#162053}
+  :focus-visible{outline:2px solid #54d8f0;outline-offset:3px}
+  @keyframes mmSlide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+  @keyframes mmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  @keyframes mmFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes mmUp{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
+  @keyframes mmGlow{0%,100%{box-shadow:0 0 0 0 rgba(84,216,240,.35)}50%{box-shadow:0 0 0 9px rgba(84,216,240,0)}}
+</style>
+</helmet>
+
+<div style="position:relative;overflow:hidden;background:#162053">
+
+  <section data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden">
+
+    <div style="position:absolute;inset:0;display:flex;align-items:stretch">
+      <div data-mm-track="1" style="display:flex;width:max-content;animation:mmSlide var(--mm-speed,46s) linear infinite;will-change:transform">
+        <div data-mm-half="1" style="display:flex;flex:none">
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p1.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p2.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p4.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p6.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p8.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p9.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p10.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p11.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p12.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p15.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p16.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p17.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p18.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p19.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/asado.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        </div>
+        <div data-mm-half="2" style="display:flex;flex:none" aria-hidden="true">
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p1.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p2.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p4.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p6.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p8.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p9.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p10.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p11.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p12.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p15.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p16.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p17.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p18.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/p19.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="flex:none;width:var(--mm-photo-w,33.333vw);position:relative;overflow:hidden"><img src="assets/asado.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(15,23,66,var(--mm-veil,0.9)) 0%,rgba(15,23,66,0.86) 38%,rgba(15,23,66,0.5) 68%,rgba(15,23,66,0.72) 100%)"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(120% 80% at 12% 20%,rgba(84,216,240,0.16) 0%,rgba(84,216,240,0) 55%)"></div>
+
+    <header style="position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:26px 7vw 0">
+      <a href="#hero" style="display:flex;align-items:center;gap:14px;color:inherit">
+        <img src="assets/logo.png" alt="M+ Martin Sacavino Turismo" style="width:54px;height:54px;border-radius:999px;display:block;box-shadow:0 6px 22px rgba(0,0,0,.35)">
+        <span style="display:flex;flex-direction:column;line-height:1.15">
+          <span style="font-family:'Caprasimo',cursive;font-weight:400;font-size:19px;letter-spacing:.2px;color:#fff">M+ Martin Sacavino</span>
+          <span style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#54d8f0">Turismo receptivo</span>
+        </span>
+      </a>
+      <nav style="display:flex;align-items:center;gap:34px">
+        <a href="#quienes" style="font-size:14px;font-weight:400;white-space:nowrap;color:rgba(238,244,251,.82)" style-hover="color:#54d8f0">Quiénes somos</a>
+        <a href="#hacemos" style="font-size:14px;font-weight:400;white-space:nowrap;color:rgba(238,244,251,.82)" style-hover="color:#54d8f0">Qué hacemos</a>
+        <a href="#resenas" style="font-size:14px;font-weight:400;white-space:nowrap;color:rgba(238,244,251,.82)" style-hover="color:#54d8f0">Reseñas</a>
+        <a href="https://wa.link/s9bfbj" style="font-family:'Caprasimo',cursive;font-weight:400;font-size:15px;padding:11px 24px;border-radius:999px;background:#54d8f0;color:#162053" style-hover="background:#8ce6f7">Escribinos</a>
+      </nav>
+    </header>
+
+    <div id="hero" style="position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:center;padding:8vh 7vw 12vh;max-width:1000px">
+      <span style="display:inline-flex;align-items:center;gap:10px;align-self:flex-start;padding:8px 16px 8px 12px;border-radius:999px;background:rgba(84,216,240,.14);border:1px solid rgba(84,216,240,.38);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#a8ecf9;animation:mmFade .7s ease both">
+        <span style="width:7px;height:7px;border-radius:999px;background:#54d8f0;display:block"></span>
+        Córdoba · Argentina
+      </span>
+      <h1 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(46px,6.4vw,104px);line-height:.98;margin:26px 0 0;color:#fff;text-wrap:balance;animation:mmFade .8s .06s ease both">
+        Turismo de<br>experiencias en<br><span style="color:#54d8f0">Córdoba</span>
+      </h1>
+      <p style="font-size:clamp(17px,1.35vw,21px);font-weight:300;line-height:1.6;max-width:600px;margin:30px 0 0;color:rgba(238,244,251,.9);animation:mmFade .8s .12s ease both">
+        Viajes con amigos, golf, tenis, cacería, despedidas y mucho más. Recibimos grupos en Córdoba y armamos cada plan a medida.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:38px;animation:mmFade .8s .18s ease both">
+        <a href="#quienes" style="font-family:'Caprasimo',cursive;font-weight:400;font-size:16px;padding:15px 30px;border-radius:999px;background:#54d8f0;color:#162053;box-shadow:0 12px 30px rgba(84,216,240,.24)" style-hover="background:#8ce6f7">Conocenos</a>
+        <a href="#valoranos" style="display:inline-flex;align-items:center;gap:10px;font-family:'Caprasimo',cursive;font-weight:400;font-size:16px;padding:15px 28px;border-radius:999px;background:rgba(84,216,240,.1);border:1.5px solid #54d8f0;color:#54d8f0;animation:mmGlow 2.6s ease-in-out infinite" style-hover="background:#54d8f0;color:#162053;animation:none">
+          <span style="font-size:19px;line-height:1;color:#ffd166">★</span>
+          Valorá nuestra experiencia
+        </a>
+      </div>
+    </div>
+
+    <div style="position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 7vw 30px;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(238,244,251,.55)">
+      <span>+500 grupos recibidos</span>
+      <span style="flex:1;height:1px;background:rgba(238,244,251,.16)"></span>
+      <a href="https://instagram.com/cordobaconamigos.msacavino" style="letter-spacing:.18em;color:rgba(238,244,251,.55)" style-hover="color:#54d8f0">@cordobaconamigos.msacavino</a>
+    </div>
+  </section>
+
+  <section id="quienes" data-screen-label="Quiénes somos" style="position:relative;padding:clamp(80px,10vh,140px) 7vw;background:#162053;scroll-margin-top:0">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(40px,6vw,90px);align-items:start;max-width:1480px;margin:0 auto">
+      <div>
+        <span style="font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#54d8f0">Quiénes somos</span>
+        <h2 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(34px,3.6vw,58px);line-height:1.06;margin:18px 0 0;color:#fff">Una empresa de soluciones turísticas integrales</h2>
+        <div style="display:flex;align-items:center;gap:16px;margin-top:34px">
+          <img src="assets/logo.png" alt="" style="width:64px;height:64px;border-radius:999px;display:block">
+          <div style="line-height:1.4">
+            <div style="font-family:'Caprasimo',cursive;font-weight:400;font-size:17px;color:#fff">M+ Martin Sacavino Turismo</div>
+            <div style="font-size:13px;color:rgba(238,244,251,.6)">Turismo receptivo y emisivo</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:clamp(18px,1.5vw,24px);font-weight:300;line-height:1.62;margin:0;color:rgba(238,244,251,.92);text-wrap:pretty">
+          En M+ somos una empresa dedicada a brindar soluciones turísticas integrales, ofreciendo servicios tanto emisivos como receptivos. Nuestro objetivo principal es crear experiencias únicas y memorables para todos nuestros clientes, combinando profesionalismo, atención personalizada y una pasión genuina por el turismo.
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:38px">
+          <div style="display:flex;align-items:baseline;gap:12px;padding:14px 22px;border-radius:999px;background:rgba(84,216,240,.08);border:1px solid rgba(84,216,240,.22)">
+            <span style="font-family:'Caprasimo',cursive;font-weight:400;font-size:26px;line-height:1;color:#54d8f0">+500</span>
+            <span style="font-size:13.5px;color:rgba(238,244,251,.78)">grupos recibidos en Córdoba</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:12px;padding:14px 22px;border-radius:999px;background:rgba(84,216,240,.08);border:1px solid rgba(84,216,240,.22)">
+            <span style="font-family:'Caprasimo',cursive;font-weight:400;font-size:26px;line-height:1;color:#54d8f0">100%</span>
+            <span style="font-size:13.5px;color:rgba(238,244,251,.78)">planes armados a medida</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="hacemos" data-screen-label="Qué hacemos" style="position:relative;padding:clamp(80px,10vh,140px) 7vw;background:#0f1742">
+    <div style="max-width:1480px;margin:0 auto">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,90px);align-items:end">
+        <div>
+          <span style="font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#54d8f0">Qué hacemos</span>
+          <h2 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(34px,3.6vw,58px);line-height:1.06;margin:18px 0 0;color:#fff">Turismo Receptivo en Córdoba, Argentina</h2>
+        </div>
+        <p style="font-size:clamp(16px,1.25vw,19px);font-weight:300;line-height:1.65;margin:0;color:rgba(238,244,251,.85);text-wrap:pretty">
+          Si tu destino es nuestra querida Córdoba, estamos acá para ofrecerte momentos inolvidables. Nos especializamos en organizar planes exclusivos para grupos de amigos o familias, con actividades que reflejan la esencia y hospitalidad cordobesa.
+        </p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;margin-top:56px">
+        <article style="flex:0 1 calc(33.333% - 14px);min-width:230px;position:relative;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end">
+          <img src="assets/p4.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85)">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,66,.1) 30%,rgba(15,23,66,.92) 100%)"></div>
+          <div style="position:relative;padding:26px">
+            <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:24px;line-height:1.1;margin:0;color:#fff">Golf en Córdoba</h3>
+            <p style="font-size:14px;font-weight:300;line-height:1.5;margin:10px 0 0;color:rgba(238,244,251,.82)">Con excelentes canchas.</p>
+          </div>
+        </article>
+        <article style="flex:0 1 calc(33.333% - 14px);min-width:230px;position:relative;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end">
+          <img src="assets/p16.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85)">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,66,.1) 30%,rgba(15,23,66,.92) 100%)"></div>
+          <div style="position:relative;padding:26px">
+            <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:24px;line-height:1.1;margin:0;color:#fff">Fans del Deporte</h3>
+            <p style="font-size:14px;font-weight:300;line-height:1.5;margin:10px 0 0;color:rgba(238,244,251,.82)">Tenis, rugby, fútbol y más...</p>
+          </div>
+        </article>
+        <article style="flex:0 1 calc(33.333% - 14px);min-width:230px;position:relative;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end">
+          <img src="assets/p19.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85)">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,66,.1) 30%,rgba(15,23,66,.92) 100%)"></div>
+          <div style="position:relative;padding:26px">
+            <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:24px;line-height:1.1;margin:0;color:#fff">Despedida de Soltero/a</h3>
+            <p style="font-size:14px;font-weight:300;line-height:1.5;margin:10px 0 0;color:rgba(238,244,251,.82)">De la previa al último brindis.</p>
+          </div>
+        </article>
+        <article style="flex:0 1 calc(33.333% - 14px);min-width:230px;position:relative;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end">
+          <img src="assets/p17.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85)">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,66,.1) 30%,rgba(15,23,66,.92) 100%)"></div>
+          <div style="position:relative;padding:26px">
+            <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:24px;line-height:1.1;margin:0;color:#fff">Las mejores fiestas</h3>
+            <p style="font-size:14px;font-weight:300;line-height:1.5;margin:10px 0 0;color:rgba(238,244,251,.82)">Disfruta de la magia de la noche cordobesa.</p>
+          </div>
+        </article>
+        <article style="flex:0 1 calc(33.333% - 14px);min-width:230px;position:relative;border-radius:22px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end">
+          <img src="assets/asado.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.85)">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,66,.1) 30%,rgba(15,23,66,.92) 100%)"></div>
+          <div style="position:relative;padding:26px">
+            <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:24px;line-height:1.1;margin:0;color:#fff">Los mejores asados</h3>
+            <p style="font-size:14px;font-weight:300;line-height:1.5;margin:10px 0 0;color:rgba(238,244,251,.82)">Sabores locales, mesa larga y sobremesa.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="resenas" data-screen-label="Reseñas de clientes" style="position:relative;padding:clamp(80px,10vh,140px) 7vw;background:#162053">
+    <div style="display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(40px,6vw,90px);align-items:center;max-width:1480px;margin:0 auto">
+      <div>
+        <span style="font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#54d8f0">Reseñas de clientes</span>
+        <h2 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(34px,3.6vw,58px);line-height:1.06;margin:18px 0 0;color:#fff">Lo que dicen los grupos</h2>
+        <p style="font-size:clamp(16px,1.25vw,19px);font-weight:300;line-height:1.65;margin:20px 0 0;max-width:440px;color:rgba(238,244,251,.85)">Cada reseña llega de un grupo que recibimos en Córdoba. Las nuevas se suman arriba.</p>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:30px">
+          <span style="font-family:'Caprasimo',cursive;font-size:34px;line-height:1;color:#fff">{{ avgRating }}</span>
+          <span style="font-size:22px;line-height:1;color:#ffd166">{{ avgStars }}</span>
+          <span style="font-size:13px;color:rgba(238,244,251,.6)">{{ reviewCount }}</span>
+        </div>
+        <a href="#valoranos" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;font-family:'Caprasimo',cursive;font-size:15px;padding:13px 26px;border-radius:999px;border:1.5px solid rgba(238,244,251,.35);color:#eef4fb" style-hover="border-color:#54d8f0;color:#54d8f0">Dejar la mía</a>
+      </div>
+      <div style="position:relative;height:min(560px,70vh);overflow:hidden;mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)">
+        <div style="display:flex;flex-direction:column;animation:mmUp var(--mm-rev-speed,34s) linear infinite;will-change:transform">
+          <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+            <article style="flex:none;box-sizing:border-box;height:240px;margin-bottom:18px;display:flex;gap:18px;padding:24px;border-radius:24px;background:rgba(238,244,251,.05);border:1px solid rgba(238,244,251,.13)">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:999px;background:rgba(84,216,240,.16);font-family:'Caprasimo',cursive;font-size:16px;color:#54d8f0">{{ r.initial }}</span>
+                  <span style="font-size:15px;font-weight:500;color:#fff">{{ r.name }}</span>
+                </div>
+                <div style="margin-top:10px;font-size:16px;line-height:1;color:#ffd166;letter-spacing:.06em">{{ r.stars }}</div>
+                <p style="flex:1;margin:12px 0 0;font-size:14.5px;font-weight:300;line-height:1.55;color:rgba(238,244,251,.86);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5">{{ r.text }}</p>
+              </div>
+              <sc-if value="{{ r.photo }}" hint-placeholder-val="{{ false }}">
+                <div style="flex:none;width:130px;border-radius:18px;overflow:hidden;background:rgba(238,244,251,.06);background-image:{{ r.photoBg }};background-size:cover;background-position:center"></div>
+              </sc-if>
+            </article>
+          </sc-for>
+          <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+            <article aria-hidden="true" style="flex:none;box-sizing:border-box;height:240px;margin-bottom:18px;display:flex;gap:18px;padding:24px;border-radius:24px;background:rgba(238,244,251,.05);border:1px solid rgba(238,244,251,.13)">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:999px;background:rgba(84,216,240,.16);font-family:'Caprasimo',cursive;font-size:16px;color:#54d8f0">{{ r.initial }}</span>
+                  <span style="font-size:15px;font-weight:500;color:#fff">{{ r.name }}</span>
+                </div>
+                <div style="margin-top:10px;font-size:16px;line-height:1;color:#ffd166;letter-spacing:.06em">{{ r.stars }}</div>
+                <p style="flex:1;margin:12px 0 0;font-size:14.5px;font-weight:300;line-height:1.55;color:rgba(238,244,251,.86);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5">{{ r.text }}</p>
+              </div>
+              <sc-if value="{{ r.photo }}" hint-placeholder-val="{{ false }}">
+                <div style="flex:none;width:130px;border-radius:18px;overflow:hidden;background:rgba(238,244,251,.06);background-image:{{ r.photoBg }};background-size:cover;background-position:center"></div>
+              </sc-if>
+            </article>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Contacto" style="position:relative;padding:clamp(80px,10vh,130px) 7vw;background:#0f1742;overflow:hidden">
+    <div style="position:absolute;right:-8vw;top:-6vw;width:38vw;height:38vw;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(84,216,240,.22),rgba(84,216,240,0) 65%)"></div>
+    <div style="position:relative;max-width:1480px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(40px,6vw,90px);align-items:center">
+      <div>
+        <h2 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(36px,4.4vw,72px);line-height:1.02;margin:0;color:#fff">Contanos qué querés venir a hacer.<br></h2>
+        <p style="font-size:clamp(16px,1.3vw,20px);font-weight:300;line-height:1.6;margin:22px 0 0;max-width:520px;color:rgba(238,244,251,.85)">Escribinos y armamos el plan de tu grupo: golf, tenis, cacería, despedidas y mucho más.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:36px">
+          <a href="https://wa.link/s9bfbj" style="font-family:'Caprasimo',cursive;font-weight:400;font-size:16px;padding:16px 32px;border-radius:999px;background:#54d8f0;color:#162053" style-hover="background:#8ce6f7">Escribinos por WhatsApp</a>
+          <a href="https://instagram.com/cordobaconamigos.msacavino" style="font-family:'Caprasimo',cursive;font-weight:400;font-size:16px;padding:16px 32px;border-radius:999px;border:1.5px solid rgba(238,244,251,.35);color:#eef4fb" style-hover="border-color:#54d8f0;color:#54d8f0">Ver Instagram</a>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:14px">
+          <div style="flex:1;border-radius:18px;overflow:hidden;aspect-ratio:3/4"><img src="assets/p2.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+          <div style="flex:1;border-radius:18px;overflow:hidden;aspect-ratio:3/4;margin-top:32px"><img src="assets/p8.jpg" alt="" style="width:100%;height:100%;object-fit:cover"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="valoranos" data-screen-label="Valoraciones" style="position:relative;padding:clamp(80px,10vh,130px) 7vw;background:#162053;text-align:center;scroll-margin-top:0">
+    <div style="max-width:720px;margin:0 auto">
+      <span style="font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#54d8f0">Valorá nuestra experiencia</span>
+      <h2 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:clamp(32px,3.4vw,54px);line-height:1.06;margin:18px 0 0;color:#fff">¿Cómo la pasaste con M+?</h2>
+      <p style="font-size:clamp(15px,1.2vw,18px);font-weight:300;line-height:1.6;margin:16px auto 0;max-width:520px;color:rgba(238,244,251,.8)">Elegí tu puntaje y contanos en pocas palabras cómo fue tu experiencia.</p>
+
+      <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:40px">
+          <div style="display:flex;justify-content:center;gap:10px" onMouseLeave="{{ clearHover }}">
+            <button type="button" aria-label="1 estrella" onClick="{{ pick1 }}" onMouseEnter="{{ hover1 }}" style="background:none;border:none;cursor:pointer;padding:4px;font-size:clamp(38px,4.4vw,58px);line-height:1;transition:transform .15s ease;color:{{ star1 }}" style-hover="transform:scale(1.12)">★</button>
+            <button type="button" aria-label="2 estrellas" onClick="{{ pick2 }}" onMouseEnter="{{ hover2 }}" style="background:none;border:none;cursor:pointer;padding:4px;font-size:clamp(38px,4.4vw,58px);line-height:1;transition:transform .15s ease;color:{{ star2 }}" style-hover="transform:scale(1.12)">★</button>
+            <button type="button" aria-label="3 estrellas" onClick="{{ pick3 }}" onMouseEnter="{{ hover3 }}" style="background:none;border:none;cursor:pointer;padding:4px;font-size:clamp(38px,4.4vw,58px);line-height:1;transition:transform .15s ease;color:{{ star3 }}" style-hover="transform:scale(1.12)">★</button>
+            <button type="button" aria-label="4 estrellas" onClick="{{ pick4 }}" onMouseEnter="{{ hover4 }}" style="background:none;border:none;cursor:pointer;padding:4px;font-size:clamp(38px,4.4vw,58px);line-height:1;transition:transform .15s ease;color:{{ star4 }}" style-hover="transform:scale(1.12)">★</button>
+            <button type="button" aria-label="5 estrellas" onClick="{{ pick5 }}" onMouseEnter="{{ hover5 }}" style="background:none;border:none;cursor:pointer;padding:4px;font-size:clamp(38px,4.4vw,58px);line-height:1;transition:transform .15s ease;color:{{ star5 }}" style-hover="transform:scale(1.12)">★</button>
+          </div>
+          <div style="min-height:22px;margin-top:10px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#54d8f0">{{ ratingLabel }}</div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px;text-align:left">
+            <input type="text" value="{{ name }}" onChange="{{ onName }}" placeholder="Tu nombre" style="display:block;width:100%;box-sizing:border-box;padding:14px 20px;border-radius:999px;background:rgba(238,244,251,.06);border:1.5px solid rgba(238,244,251,.2);color:#eef4fb;font-family:'Figtree',sans-serif;font-size:15px;outline:none" style-focus="border-color:#54d8f0">
+            <textarea rows="4" value="{{ review }}" onChange="{{ onReview }}" placeholder="Contanos cómo fue tu experiencia (obligatorio)" style="display:block;width:100%;box-sizing:border-box;padding:18px 20px;border-radius:22px;background:rgba(238,244,251,.06);border:1.5px solid rgba(238,244,251,.2);color:#eef4fb;font-size:16px;font-weight:300;line-height:1.55;resize:vertical;outline:none" style-focus="border-color:#54d8f0"></textarea>
+            <label style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-radius:22px;background:rgba(238,244,251,.04);border:1.5px dashed rgba(238,244,251,.22);cursor:pointer" style-hover="border-color:#54d8f0">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:999px;background:rgba(84,216,240,.14);color:#54d8f0;font-size:18px">+</span>
+              <span style="flex:1;min-width:0;font-size:14px;color:rgba(238,244,251,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ photoLabel }}</span>
+              <input type="file" accept="image/*" onChange="{{ onPhoto }}" style="display:none">
+            </label>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:22px">
+            <button type="button" disabled="{{ cantSend }}" onClick="{{ send }}" style="font-family:'Caprasimo',cursive;font-weight:400;font-size:16px;padding:15px 34px;border-radius:999px;border:none;background:#54d8f0;color:#162053;cursor:{{ sendCursor }};opacity:{{ sendOpacity }};transition:opacity .2s ease">Enviar reseña</button>
+          </div>
+          <div style="min-height:20px;margin-top:12px;font-size:13px;color:rgba(238,244,251,.55)">{{ hint }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sent }}">
+        <div style="margin-top:44px;padding:38px 30px;border-radius:26px;background:rgba(84,216,240,.1);border:1px solid rgba(84,216,240,.3)">
+          <div style="font-size:38px;line-height:1;color:#ffd166">{{ sentStars }}</div>
+          <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:26px;margin:16px 0 0;color:#fff">¡Gracias por tu reseña!</h3>
+          <p style="font-size:15px;font-weight:300;line-height:1.6;margin:10px auto 0;max-width:420px;color:rgba(238,244,251,.8)">La leemos todas. Nos ayuda a seguir mejorando cada plan en Córdoba.</p>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <footer style="padding:34px 7vw;background:#162053;border-top:1px solid rgba(238,244,251,.12);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;font-size:13px;color:rgba(238,244,251,.55)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="assets/logo.png" alt="" style="width:34px;height:34px;border-radius:999px;display:block">
+      <span>M+ Martin Sacavino Turismo · Córdoba, Argentina</span>
+    </div>
+    <div style="display:flex;gap:26px">
+      <a href="https://instagram.com/cordobaconamigos.msacavino" style="color:rgba(238,244,251,.55)" style-hover="color:#54d8f0">Instagram</a>
+      <a href="https://wa.link/s9bfbj" style="color:rgba(238,244,251,.55)" style-hover="color:#54d8f0">WhatsApp</a>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;slideSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:46,&quot;min&quot;:18,&quot;max&quot;:90,&quot;step&quot;:2,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Carrusel&quot;},&quot;photosPerView&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:2,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Carrusel&quot;},&quot;overlay&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.9,&quot;min&quot;:0.4,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Carrusel&quot;},&quot;reviewsSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:34,&quot;min&quot;:14,&quot;max&quot;:80,&quot;step&quot;:2,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Reseñas&quot;}}">
+const MM_LABELS = ['', 'Podemos mejorar', 'Estuvo bien', 'Buena experiencia', 'Muy buena', '¡Excelente!'];
+
+const MM_SEED = [
+  { name: 'Nicolás Ferreyra', rating: 5, text: 'Vinimos ocho amigos por la despedida y no tuvimos que pensar en nada. Traslados, cancha y la fiesta, todo resuelto.', photo: 'assets/p11.jpg' },
+  { name: 'Diego Sosa', rating: 5, text: 'Tres días de golf impecables. Nos consiguieron horarios en dos canchas y un asado que fue el mejor momento del viaje.', photo: '' },
+  { name: 'Martina Ruiz', rating: 4, text: 'Muy atentos de principio a fin. Nos armaron el fin de semana a medida y estuvieron disponibles todo el tiempo.', photo: '' },
+  { name: 'Grupo Estadio Español', rating: 5, text: 'Interclub de tenis en Córdoba: organización, comidas y clima de grupo. Volvemos el año que viene.', photo: 'assets/p16.jpg' },
+  { name: 'Juan Pablo Molina', rating: 5, text: 'Reservamos con poco tiempo y aun así salió todo perfecto. Recomendados para grupos grandes.', photo: '' }
+];
+
+class Component extends DCLogic {
+  state = { rating: 0, hover: 0, review: '', sent: false, name: '', photo: '', photoName: '', extra: [] };
+
+  shufflePhotos() {
+    const track = this.trackEl || document.querySelector('[data-mm-track]');
+    if (!track || track.children.length < 2) return;
+    const halves = [track.children[0], track.children[1]];
+    const n = halves[0].children.length;
+    const order = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    for (const half of halves) {
+      const cells = Array.from(half.children);
+      for (const i of order) half.appendChild(cells[i]);
+    }
+    this.trackEl = track;
+  }
+
+  syncVars() {
+    const r = document.documentElement.style;
+    const per = Math.max(1, Math.min(5, Number(this.props.photosPerView ?? 3)));
+    // track holds 9 photos per half; each photo is (100/per)% of viewport width
+    r.setProperty('--mm-photo-w', (100 / per) + 'vw');
+    r.setProperty('--mm-speed', (this.props.slideSeconds ?? 46) + 's');
+    r.setProperty('--mm-veil', String(this.props.overlay ?? 0.9));
+    r.setProperty('--mm-rev-speed', (this.props.reviewsSeconds ?? 34) + 's');
+  }
+  componentDidMount() { this.syncVars(); this.shufflePhotos(); }
+  componentDidUpdate() { this.syncVars(); }
+
+  renderVals() {
+    const { rating, hover, review, sent, name, photo, photoName, extra } = this.state;
+    const shown = hover || rating;
+    const all = extra.concat(MM_SEED);
+    const avg = all.reduce((s, r) => s + r.rating, 0) / all.length;
+    const vals = {
+      review, sent, notSent: !sent, name,
+      photoLabel: photoName || 'Adjuntar una foto (opcional)',
+      onName: (e) => this.setState({ name: e.target.value }),
+      onPhoto: (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (f) this.setState({ photo: URL.createObjectURL(f), photoName: f.name });
+      },
+      reviews: all.map((r) => ({
+        name: r.name,
+        initial: (r.name.trim()[0] || 'M').toUpperCase(),
+        stars: '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating),
+        text: r.text,
+        photo: r.photo || '',
+        photoBg: r.photo ? 'url("' + r.photo + '")' : 'none'
+      })),
+      avgRating: avg.toFixed(1).replace('.', ','),
+      avgStars: '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg)),
+      reviewCount: all.length + ' reseñas',
+      ratingLabel: shown ? MM_LABELS[shown] : '',
+      clearHover: () => this.setState({ hover: 0 }),
+      onReview: (e) => this.setState({ review: e.target.value }),
+      cantSend: review.trim().length === 0 || rating === 0,
+      sendCursor: review.trim().length === 0 || rating === 0 ? 'not-allowed' : 'pointer',
+      sendOpacity: review.trim().length === 0 || rating === 0 ? '0.4' : '1',
+      hint: rating === 0 ? 'Elegí un puntaje y escribí tu reseña para poder enviar.'
+        : review.trim().length === 0 ? 'Escribí una reseña corta para poder enviar.' : '',
+      send: () => {
+        const s = this.state;
+        if (!s.review.trim() || !s.rating) return;
+        this.setState({
+          sent: true,
+          extra: [{ name: s.name.trim() || 'Cliente M+', rating: s.rating, text: s.review.trim(), photo: s.photo }].concat(s.extra)
+        });
+      },
+      sentStars: '★'.repeat(rating) + '☆'.repeat(5 - rating)
+    };
+    for (let i = 1; i <= 5; i++) {
+      vals['star' + i] = i <= shown ? '#ffd166' : 'rgba(238,244,251,.25)';
+      vals['pick' + i] = () => this.setState({ rating: i });
+      vals['hover' + i] = () => this.setState({ hover: i });
+    }
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
