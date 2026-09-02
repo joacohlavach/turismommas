@@ -360,8 +360,11 @@
 
   function dbReady() { return !!(SUPABASE_URL && SUPABASE_ANON_KEY); }
 
+  // Mandamos solo "apikey", que ya identifica al visitante como público.
+  // No agregamos "Authorization" porque las claves nuevas de Supabase
+  // (sb_publishable_...) no son un token JWT y ahí no corresponden.
   function dbHeaders(extra) {
-    var h = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY };
+    var h = { apikey: SUPABASE_ANON_KEY };
     for (var k in (extra || {})) h[k] = extra[k];
     return h;
   }

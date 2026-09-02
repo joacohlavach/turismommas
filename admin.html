@@ -207,10 +207,10 @@
   // una vez y reintenta; si tampoco anda, vuelve a pedir login.
   function api(path, opciones, reintento) {
     var o = opciones || {};
-    var headers = {
-      apikey: ANON,
-      Authorization: 'Bearer ' + (sesion ? sesion.access_token : ANON)
-    };
+    // "Authorization" solo cuando hay sesión: ahí sí es un token JWT real.
+    // Sin sesión alcanza con "apikey", que identifica al rol público.
+    var headers = { apikey: ANON };
+    if (sesion) headers.Authorization = 'Bearer ' + sesion.access_token;
     for (var k in (o.headers || {})) headers[k] = o.headers[k];
 
     return fetch(URL_BASE + path, { method: o.method || 'GET', headers: headers, body: o.body })
