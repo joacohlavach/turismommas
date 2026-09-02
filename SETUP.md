@@ -52,27 +52,27 @@ Todo lo que se usa acá es gratis y no pide tarjeta de crédito.
 
 ## Paso 3 — Copiar los datos de conexión a la web
 
-1. En Supabase: **Project Settings** (el engranaje) → **API**.
+1. En Supabase: **Project Settings** (el engranaje) → **API Keys**.
 2. Vas a ver dos datos:
    - **Project URL** → algo como `https://abcdefgh.supabase.co`
-   - **Project API keys** → la clave **`anon` `public`** (es larga y empieza con `eyJ`)
+   - **Publishable key** → empieza con `sb_publishable_...`
 3. Abrí el archivo **`config.js`** de este repositorio y pegá los dos datos:
 
    ```js
    window.MM_CONFIG = {
      SUPABASE_URL: 'https://abcdefgh.supabase.co',
-     SUPABASE_ANON_KEY: 'eyJhbGciOi...(la clave larga)...'
+     SUPABASE_ANON_KEY: 'sb_publishable_...(la que copiaste)...'
    };
    ```
 
 4. Guardá el archivo y subilo a GitHub (o pedímelo a mí y lo hago).
 
-> **¿Es seguro que esa clave esté a la vista en la web?** Sí. La clave `anon`
-> está pensada para eso. Lo que protege los datos son los permisos que quedaron
-> definidos en el Paso 2: un visitante solo puede leer reseñas aprobadas y
-> mandar una nueva, nada más.
+> **¿Es seguro que esa clave esté a la vista en la web?** Sí. La **Publishable
+> key** está pensada para eso. Lo que protege los datos son los permisos que
+> quedaron definidos en el Paso 2: un visitante solo puede leer reseñas
+> aprobadas y mandar una nueva, nada más.
 >
-> La que **nunca** hay que poner acá es la clave `service_role`.
+> La que **nunca** hay que poner acá es la **Secret key** (`sb_secret_...`).
 
 ---
 
