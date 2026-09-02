@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de reseñas · M+ Martin Sacavino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#162053;
+    --azul-hondo:#0f1742;
+    --cyan:#54d8f0;
+    --texto:#eef4fb;
+    --borde:rgba(238,244,251,.13);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--azul-hondo);color:var(--texto);font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Caprasimo',cursive;font-weight:400;margin:0}
+  a{color:var(--cyan);text-decoration:none}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:20px clamp(16px,5vw,48px);background:var(--azul);border-bottom:1px solid var(--borde)}
+  .marca{display:flex;align-items:center;gap:12px}
+  .marca img{width:42px;height:42px;border-radius:999px;display:block}
+  .marca .sub{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan)}
+
+  main{max-width:840px;margin:0 auto;padding:clamp(20px,4vw,40px) clamp(16px,5vw,48px) 80px}
+
+  .btn{font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;padding:11px 20px;border-radius:999px;
+    border:none;cursor:pointer;transition:opacity .15s ease,background .15s ease}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-cyan{background:var(--cyan);color:var(--azul)}
+  .btn-cyan:hover:not(:disabled){background:#8ce6f7}
+  .btn-ghost{background:transparent;color:var(--texto);border:1.5px solid rgba(238,244,251,.3)}
+  .btn-ghost:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+  .btn-rojo{background:transparent;color:#ffb4a2;border:1.5px solid rgba(255,180,162,.35)}
+  .btn-rojo:hover:not(:disabled){background:rgba(255,180,162,.12)}
+
+  input{width:100%;padding:14px 18px;border-radius:14px;background:rgba(238,244,251,.06);
+    border:1.5px solid rgba(238,244,251,.2);color:var(--texto);font-family:'Figtree',sans-serif;font-size:15px;outline:none}
+  input:focus{border-color:var(--cyan)}
+  label{display:block;font-size:13px;color:rgba(238,244,251,.7);margin:0 0 7px}
+
+  .panel{background:var(--azul);border:1px solid var(--borde);border-radius:22px;padding:clamp(22px,4vw,34px)}
+  .aviso{margin-top:14px;font-size:13.5px;line-height:1.5;color:#ffb4a2;min-height:20px}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .tab{font-size:13.5px;font-weight:500;padding:9px 18px;border-radius:999px;cursor:pointer;
+    background:rgba(238,244,251,.06);border:1px solid var(--borde);color:rgba(238,244,251,.75)}
+  .tab.on{background:rgba(84,216,240,.16);border-color:rgba(84,216,240,.4);color:var(--cyan)}
+
+  .review{background:var(--azul);border:1px solid var(--borde);border-radius:20px;padding:20px;margin-bottom:14px}
+  .review-top{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .review-nombre{font-size:16px;font-weight:600;color:#fff}
+  .review-fecha{font-size:12.5px;color:rgba(238,244,251,.5)}
+  .estrellas{font-size:16px;color:#ffd166;letter-spacing:.06em;margin-top:4px}
+  .review-texto{margin:14px 0 0;font-size:14.5px;font-weight:300;line-height:1.6;color:rgba(238,244,251,.88);white-space:pre-wrap;overflow-wrap:anywhere}
+  .review-foto{margin-top:14px;max-width:200px;border-radius:14px;display:block}
+  .acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+  .chip{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 12px;border-radius:999px;white-space:nowrap}
+  .chip-pend{background:rgba(255,209,102,.16);color:#ffd166}
+  .chip-pub{background:rgba(84,216,240,.16);color:var(--cyan)}
+  .chip-seed{background:rgba(238,244,251,.08);color:rgba(238,244,251,.6)}
+
+  .vacio{text-align:center;padding:50px 20px;color:rgba(238,244,251,.55);font-size:15px;line-height:1.6}
+  .hide{display:none !important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marca">
+    <img src="assets/logo.png" alt="">
+    <div>
+      <div style="font-family:'Caprasimo',cursive;font-size:17px;color:#fff">Panel de reseñas</div>
+      <div class="sub">M+ Martin Sacavino</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <a href="index.html" class="btn btn-ghost" style="display:inline-block">Ver la web</a>
+    <button id="salirBtn" class="btn btn-ghost hide">Salir</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Aviso cuando config.js todavía está vacío -->
+  <section id="sinConfig" class="panel hide">
+    <h2 style="font-size:22px;color:#fff">Todavía falta conectar la base</h2>
+    <p style="font-size:14.5px;line-height:1.65;color:rgba(238,244,251,.8)">
+      Este panel necesita los datos de tu proyecto de Supabase. Abrí el archivo
+      <strong>config.js</strong> del repositorio y pegá ahí el <em>Project URL</em> y la
+      clave <em>anon public</em>. Están en Supabase, en Project Settings → API.
+    </p>
+    <p style="font-size:14.5px;line-height:1.65;color:rgba(238,244,251,.8);margin-bottom:0">
+      El paso a paso completo está en <strong>SETUP.md</strong>.
+    </p>
+  </section>
+
+  <!-- Login -->
+  <section id="login" class="panel hide" style="max-width:420px;margin:6vh auto 0">
+    <h2 style="font-size:24px;color:#fff">Entrar</h2>
+    <p style="font-size:14px;line-height:1.6;color:rgba(238,244,251,.7);margin:10px 0 26px">
+      Con el usuario que creaste en Supabase.
+    </p>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <div style="height:16px"></div>
+      <label for="pass">Contraseña</label>
+      <input id="pass" type="password" autocomplete="current-password" required>
+      <div style="height:22px"></div>
+      <button id="entrarBtn" type="submit" class="btn btn-cyan" style="width:100%">Entrar</button>
+    </form>
+    <div id="loginAviso" class="aviso"></div>
+  </section>
+
+  <!-- Listado -->
+  <section id="listado" class="hide">
+    <div class="tabs">
+      <button class="tab on" data-filtro="pendientes">Pendientes <span id="nPend"></span></button>
+      <button class="tab" data-filtro="publicadas">Publicadas <span id="nPub"></span></button>
+      <button class="tab" data-filtro="todas">Todas</button>
+    </div>
+    <div id="listaAviso" class="aviso"></div>
+    <div id="lista"></div>
+  </section>
+
+</main>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var CFG = window.MM_CONFIG || {};
+  var URL_BASE = (CFG.SUPABASE_URL || '').replace(/\/+$/, '');
+  var ANON = CFG.SUPABASE_ANON_KEY || '';
+
+  var LS_KEY = 'mm_admin_sesion';
+  var sesion = null;      // { access_token, refresh_token }
+  var reviews = [];
+  var filtro = 'pendientes';
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function verSeccion(id) {
+    ['sinConfig', 'login', 'listado'].forEach(function (s) {
+      $(s).classList.toggle('hide', s !== id);
+    });
+    $('salirBtn').classList.toggle('hide', id !== 'listado');
+  }
+
+  /* --- Sesión --------------------------------------------------------------- */
+
+  function guardarSesion(s) {
+    sesion = s;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (e) { /* modo incógnito */ }
+  }
+
+  function olvidarSesion() {
+    sesion = null;
+    try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  }
+
+  function leerSesionGuardada() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
+  function entrar(email, password) {
+    return fetch(URL_BASE + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) throw new Error(data.error_description || data.msg || 'Email o contraseña incorrectos');
+        return data;
+      });
+    });
+  }
+
+  function renovarSesion() {
+    if (!sesion || !sesion.refresh_token) return Promise.reject(new Error('sin sesión'));
+    return fetch(URL_BASE + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { apikey: ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: sesion.refresh_token })
+    }).then(function (res) {
+      if (!res.ok) throw new Error('sesión vencida');
+      return res.json();
+    }).then(function (data) {
+      guardarSesion({ access_token: data.access_token, refresh_token: data.refresh_token });
+    });
+  }
+
+  // Cualquier llamada a la base pasa por acá: si el token venció, lo renueva
+  // una vez y reintenta; si tampoco anda, vuelve a pedir login.
+  function api(path, opciones, reintento) {
+    var o = opciones || {};
+    var headers = {
+      apikey: ANON,
+      Authorization: 'Bearer ' + (sesion ? sesion.access_token : ANON)
+    };
+    for (var k in (o.headers || {})) headers[k] = o.headers[k];
+
+    return fetch(URL_BASE + path, { method: o.method || 'GET', headers: headers, body: o.body })
+      .then(function (res) {
+        if (res.status === 401 && !reintento) {
+          return renovarSesion().then(function () { return api(path, o, true); });
+        }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.status === 204 ? null : res.json().catch(function () { return null; });
+      });
+  }
+
+  /* --- Datos ---------------------------------------------------------------- */
+
+  function traerReviews() {
+    aviso('listaAviso', '');
+    return api('/rest/v1/reviews?select=*&order=created_at.desc')
+      .then(function (rows) {
+        reviews = rows || [];
+        pintar();
+        // Si no vuelve ni una sola reseña, casi seguro el email no quedó
+        // cargado como administrador: sin eso la base no le muestra nada.
+        if (!reviews.length) {
+          aviso('listaAviso', 'No aparece ninguna reseña. Revisá que tu email esté cargado en la tabla "admins" de Supabase (paso 5 de db/schema.sql).');
+        }
+      })
+      .catch(function (err) {
+        if (/sesión/.test(err.message)) { olvidarSesion(); verSeccion('login'); return; }
+        aviso('listaAviso', 'No se pudieron cargar las reseñas. Probá recargar la página.');
+      });
+  }
+
+  function cambiarEstado(id, aprobada) {
+    return api('/rest/v1/reviews?id=eq.' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ approved: aprobada })
+    }).then(traerReviews);
+  }
+
+  function borrar(id) {
+    return api('/rest/v1/reviews?id=eq.' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { Prefer: 'return=minimal' }
+    }).then(traerReviews);
+  }
+
+  /* --- Pintado -------------------------------------------------------------- */
+
+  function aviso(id, texto) { $(id).textContent = texto || ''; }
+
+  function fecha(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function fotoSegura(url) {
+    if (!url) return '';
+    if (/^assets\/[A-Za-z0-9._-]+$/.test(url)) return url;
+    if (/^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//.test(url)) return url;
+    return '';
+  }
+
+  function tarjeta(r) {
+    var card = document.createElement('article');
+    card.className = 'review';
+
+    var top = document.createElement('div');
+    top.className = 'review-top';
+
+    var izq = document.createElement('div');
+    izq.style.flex = '1';
+    izq.style.minWidth = '180px';
+
+    var nombre = document.createElement('div');
+    nombre.className = 'review-nombre';
+    nombre.textContent = r.name;
+    izq.appendChild(nombre);
+
+    var f = document.createElement('div');
+    f.className = 'review-fecha';
+    f.textContent = fecha(r.created_at);
+    izq.appendChild(f);
+
+    var est = document.createElement('div');
+    est.className = 'estrellas';
+    est.textContent = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    izq.appendChild(est);
+    top.appendChild(izq);
+
+    var chips = document.createElement('div');
+    chips.style.display = 'flex';
+    chips.style.gap = '6px';
+    chips.style.flexWrap = 'wrap';
+
+    var estado = document.createElement('span');
+    estado.className = 'chip ' + (r.approved ? 'chip-pub' : 'chip-pend');
+    estado.textContent = r.approved ? 'Publicada' : 'Pendiente';
+    chips.appendChild(estado);
+
+    if (r.is_seed) {
+      var seed = document.createElement('span');
+      seed.className = 'chip chip-seed';
+      seed.textContent = 'Ejemplo';
+      chips.appendChild(seed);
+    }
+    top.appendChild(chips);
+    card.appendChild(top);
+
+    var texto = document.createElement('p');
+    texto.className = 'review-texto';
+    texto.textContent = r.body;
+    card.appendChild(texto);
+
+    var foto = fotoSegura(r.photo_url);
+    if (foto) {
+      var img = document.createElement('img');
+      img.className = 'review-foto';
+      img.src = foto;
+      img.alt = '';
+      img.loading = 'lazy';
+      card.appendChild(img);
+    }
+
+    var acciones = document.createElement('div');
+    acciones.className = 'acciones';
+
+    var toggle = document.createElement('button');
+    toggle.className = 'btn ' + (r.approved ? 'btn-ghost' : 'btn-cyan');
+    toggle.textContent = r.approved ? 'Ocultar de la web' : 'Publicar';
+    toggle.addEventListener('click', function () {
+      toggle.disabled = true;
+      cambiarEstado(r.id, !r.approved).catch(function () {
+        toggle.disabled = false;
+        aviso('listaAviso', 'No se pudo actualizar. Probá de nuevo.');
+      });
+    });
+    acciones.appendChild(toggle);
+
+    var del = document.createElement('button');
+    del.className = 'btn btn-rojo';
+    del.textContent = 'Eliminar';
+    del.addEventListener('click', function () {
+      if (!confirm('¿Eliminar la reseña de ' + r.name + '? No se puede deshacer.')) return;
+      del.disabled = true;
+      borrar(r.id).catch(function () {
+        del.disabled = false;
+        aviso('listaAviso', 'No se pudo eliminar. Probá de nuevo.');
+      });
+    });
+    acciones.appendChild(del);
+
+    card.appendChild(acciones);
+    return card;
+  }
+
+  function pintar() {
+    var pend = reviews.filter(function (r) { return !r.approved; });
+    var pub = reviews.filter(function (r) { return r.approved; });
+
+    $('nPend').textContent = pend.length ? '(' + pend.length + ')' : '';
+    $('nPub').textContent = pub.length ? '(' + pub.length + ')' : '';
+
+    var lista = filtro === 'pendientes' ? pend : filtro === 'publicadas' ? pub : reviews;
+    var cont = $('lista');
+    cont.textContent = '';
+
+    if (!lista.length) {
+      var v = document.createElement('div');
+      v.className = 'vacio';
+      v.textContent = filtro === 'pendientes'
+        ? 'No hay reseñas esperando aprobación.'
+        : filtro === 'publicadas'
+          ? 'Todavía no hay reseñas publicadas.'
+          : 'Todavía no hay reseñas.';
+      cont.appendChild(v);
+      return;
+    }
+    lista.forEach(function (r) { cont.appendChild(tarjeta(r)); });
+  }
+
+  /* --- Arranque ------------------------------------------------------------- */
+
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (o) { o.classList.remove('on'); });
+      t.classList.add('on');
+      filtro = t.getAttribute('data-filtro');
+      pintar();
+    });
+  });
+
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = $('entrarBtn');
+    btn.disabled = true;
+    btn.textContent = 'Entrando…';
+    aviso('loginAviso', '');
+
+    entrar($('email').value.trim(), $('pass').value)
+      .then(function (data) {
+        guardarSesion({ access_token: data.access_token, refresh_token: data.refresh_token });
+        $('pass').value = '';
+        verSeccion('listado');
+        return traerReviews();
+      })
+      .catch(function (err) {
+        aviso('loginAviso', err.message);
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      });
+  });
+
+  $('salirBtn').addEventListener('click', function () {
+    olvidarSesion();
+    verSeccion('login');
+  });
+
+  if (!URL_BASE || !ANON) {
+    verSeccion('sinConfig');
+  } else {
+    sesion = leerSesionGuardada();
+    if (sesion) {
+      verSeccion('listado');
+      traerReviews();
+    } else {
+      verSeccion('login');
+    }
+  }
+})();
+</script>
+</body>
+</html>

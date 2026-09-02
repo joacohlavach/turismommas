@@ -278,12 +278,13 @@
           <button type="button" id="sendBtn" class="send-btn" disabled style="cursor:not-allowed;opacity:.4">Enviar reseña</button>
         </div>
         <div id="sendHint" style="min-height:20px;margin-top:12px;font-size:13px;color:rgba(238,244,251,.55)">Elegí un puntaje y escribí tu reseña para poder enviar.</div>
+        <div id="sendError" style="display:none;margin-top:10px;font-size:13.5px;line-height:1.5;color:#ffb4a2"></div>
       </div>
 
       <div id="reviewSent" style="display:none;margin-top:44px;padding:38px 30px;border-radius:26px;background:rgba(84,216,240,.1);border:1px solid rgba(84,216,240,.3)">
         <div id="sentStars" style="font-size:38px;line-height:1;color:#ffd166"></div>
         <h3 style="font-family:'Caprasimo',cursive;font-weight:400;font-size:26px;margin:16px 0 0;color:#fff">¡Gracias por tu reseña!</h3>
-        <p style="font-size:15px;font-weight:300;line-height:1.6;margin:10px auto 0;max-width:420px;color:rgba(238,244,251,.8)">La leemos todas. Nos ayuda a seguir mejorando cada plan en Córdoba.</p>
+        <p style="font-size:15px;font-weight:300;line-height:1.6;margin:10px auto 0;max-width:420px;color:rgba(238,244,251,.8)">La leemos todas. La vamos a publicar en el sitio en las próximas horas.</p>
       </div>
     </div>
   </section>
@@ -300,9 +301,24 @@
   </footer>
 </div>
 
+<script src="config.js"></script>
 <script>
 (function () {
   "use strict";
+
+  // Los datos de conexión con Supabase se cargan desde config.js — ese es el
+  // único archivo que hay que editar para conectar la web con la base.
+  var CFG = window.MM_CONFIG || {};
+  var SUPABASE_URL = (CFG.SUPABASE_URL || '').replace(/\/+$/, '');
+  var SUPABASE_ANON_KEY = CFG.SUPABASE_ANON_KEY || '';
+
+  // Cuántas tarjetas mostrar como mínimo. Mientras haya menos reseñas reales
+  // que esto, se completa con las de ejemplo.
+  var MIN_REVIEWS = 4;
+
+  var PHOTO_BUCKET = 'review-photos';
+  var PHOTO_MAX_WIDTH = 1200;   // las fotos se achican antes de subirlas
+  var PHOTO_QUALITY = 0.82;
 
   var MM_PHOTOS = ['p1','p2','p4','p6','p8','p9','p10','p11','p12','p15','p16','p17','p18','p19','asado']
     .map(function (n) { return 'assets/' + n + '.jpg'; });
@@ -333,60 +349,179 @@
 
   var MM_LABELS = ['', 'Podemos mejorar', 'Estuvo bien', 'Buena experiencia', 'Muy buena', '¡Excelente!'];
 
-  var MM_SEED = [
-    { name: 'Nicolás Ferreyra', rating: 5, text: 'Vinimos ocho amigos por la despedida y no tuvimos que pensar en nada. Traslados, cancha y la fiesta, todo resuelto.', photo: 'assets/p11.jpg' },
-    { name: 'Diego Sosa', rating: 5, text: 'Tres días de golf impecables. Nos consiguieron horarios en dos canchas y un asado que fue el mejor momento del viaje.', photo: '' },
-    { name: 'Martina Ruiz', rating: 4, text: 'Muy atentos de principio a fin. Nos armaron el fin de semana a medida y estuvieron disponibles todo el tiempo.', photo: '' },
-    { name: 'Grupo Estadio Español', rating: 5, text: 'Interclub de tenis en Córdoba: organización, comidas y clima de grupo. Volvemos el año que viene.', photo: 'assets/p16.jpg' },
-    { name: 'Juan Pablo Molina', rating: 5, text: 'Reservamos con poco tiempo y aun así salió todo perfecto. Recomendados para grupos grandes.', photo: '' }
+  // Copia local de las 4 reseñas de ejemplo. Solo se usan si la base todavía
+  // no está configurada o si no responde, para que la sección nunca se vea rota.
+  var SEED_FALLBACK = [
+    { name: 'Nicolás Ferreyra', rating: 5, body: 'Vinimos ocho amigos por la despedida y no tuvimos que pensar en nada. Traslados, cancha y la fiesta, todo resuelto.', photo: 'assets/p11.jpg' },
+    { name: 'Diego Sosa', rating: 5, body: 'Tres días de golf impecables. Nos consiguieron horarios en dos canchas y un asado que fue el mejor momento del viaje.', photo: '' },
+    { name: 'Martina Ruiz', rating: 4, body: 'Muy atentos de principio a fin. Nos armaron el fin de semana a medida y estuvieron disponibles todo el tiempo.', photo: '' },
+    { name: 'Grupo Estadio Español', rating: 5, body: 'Interclub de tenis en Córdoba: organización, comidas y clima de grupo. Volvemos el año que viene.', photo: 'assets/p16.jpg' }
   ];
-  var extraReviews = [];
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  function dbReady() { return !!(SUPABASE_URL && SUPABASE_ANON_KEY); }
+
+  function dbHeaders(extra) {
+    var h = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY };
+    for (var k in (extra || {})) h[k] = extra[k];
+    return h;
+  }
+
+  /* --- Dibujo de las tarjetas ------------------------------------------------
+     Las reseñas las escriben visitantes, así que las tarjetas se arman con la
+     API del DOM (textContent) en vez de pegar HTML: nada de lo que escriba
+     alguien puede convertirse en código dentro de la página. */
+
+  function safePhotoUrl(url) {
+    if (!url) return '';
+    // Solo fotos de nuestro propio storage o imágenes que ya viven en la web.
+    if (/^assets\/[A-Za-z0-9._-]+$/.test(url)) return url;
+    if (/^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//.test(url)) return url;
+    return '';
+  }
+
+  function el(tag, style, text) {
+    var node = document.createElement(tag);
+    if (style) node.setAttribute('style', style);
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function reviewCard(r) {
+    var card = el('article', 'flex:none;box-sizing:border-box;height:240px;margin-bottom:18px;display:flex;gap:18px;padding:24px;border-radius:24px;background:rgba(238,244,251,.05);border:1px solid rgba(238,244,251,.13)');
+
+    var col = el('div', 'flex:1;min-width:0;display:flex;flex-direction:column');
+    var head = el('div', 'display:flex;align-items:center;gap:12px');
+    var name = (r.name || 'Cliente M+').trim();
+    head.appendChild(el('span', 'display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:999px;background:rgba(84,216,240,.16);font-family:\'Caprasimo\',cursive;font-size:16px;color:#54d8f0', (name[0] || 'M').toUpperCase()));
+    head.appendChild(el('span', 'font-size:15px;font-weight:500;color:#fff', name));
+    col.appendChild(head);
+
+    col.appendChild(el('div', 'margin-top:10px;font-size:16px;line-height:1;color:#ffd166;letter-spacing:.06em',
+      '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)));
+    col.appendChild(el('p', 'flex:1;margin:12px 0 0;font-size:14.5px;font-weight:300;line-height:1.55;color:rgba(238,244,251,.86);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5', r.body));
+    card.appendChild(col);
+
+    var photo = safePhotoUrl(r.photo);
+    if (photo) {
+      var frame = el('div', 'flex:none;width:130px;border-radius:18px;overflow:hidden;background:rgba(238,244,251,.06)');
+      var img = el('img', 'width:100%;height:100%;object-fit:cover;display:block');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.src = photo;
+      frame.appendChild(img);
+      card.appendChild(frame);
+    }
+    return card;
+  }
+
+  function renderReviews(list) {
+    var track = document.getElementById('reviewsTrack');
+    track.textContent = '';
+    if (!list.length) return;
+
+    list.forEach(function (r) { track.appendChild(reviewCard(r)); });
+    // Segunda copia idéntica: es la que hace que el loop vertical empalme.
+    list.forEach(function (r) {
+      var copy = reviewCard(r);
+      copy.setAttribute('aria-hidden', 'true');
+      track.appendChild(copy);
+    });
+
+    var avg = list.reduce(function (s, r) { return s + r.rating; }, 0) / list.length;
+    document.getElementById('avgRating').textContent = avg.toFixed(1).replace('.', ',');
+    document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+    document.getElementById('reviewCount').textContent = list.length === 1 ? '1 reseña' : list.length + ' reseñas';
+  }
+
+  /* Las de ejemplo solo rellenan hasta MIN_REVIEWS: cuando hay suficientes
+     reseñas reales aprobadas, dejan de aparecer solas. */
+  function pickVisible(rows) {
+    var real = rows.filter(function (r) { return !r.isSeed; });
+    var seeds = rows.filter(function (r) { return r.isSeed; });
+    if (real.length >= MIN_REVIEWS) return real;
+    return real.concat(seeds.slice(0, MIN_REVIEWS - real.length));
+  }
+
+  function loadReviews() {
+    if (!dbReady()) { renderReviews(SEED_FALLBACK); return; }
+
+    fetch(SUPABASE_URL + '/rest/v1/reviews?select=name,rating,body,photo_url,is_seed&approved=eq.true&order=created_at.desc', { headers: dbHeaders() })
+      .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status)); })
+      .then(function (rows) {
+        var list = pickVisible(rows.map(function (r) {
+          return { name: r.name, rating: r.rating, body: r.body, photo: r.photo_url || '', isSeed: r.is_seed };
+        }));
+        renderReviews(list.length ? list : SEED_FALLBACK);
+      })
+      .catch(function (err) {
+        console.warn('No se pudieron traer las reseñas, muestro las de ejemplo:', err);
+        renderReviews(SEED_FALLBACK);
+      });
+  }
+
+  /* --- Envío de una reseña nueva -------------------------------------------- */
+
+  // Achica la foto antes de subirla: del celular vienen de 4 MB y quedan en ~200 KB.
+  function shrinkPhoto(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, PHOTO_MAX_WIDTH / img.width);
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function (blob) {
+          blob ? resolve(blob) : reject(new Error('No se pudo procesar la imagen'));
+        }, 'image/jpeg', PHOTO_QUALITY);
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error('No se pudo leer la imagen'));
+      };
+      img.src = url;
     });
   }
 
-  function reviewCardHtml(r, ariaHidden) {
-    var initial = (r.name.trim()[0] || 'M').toUpperCase();
-    var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-    var photoHtml = r.photo
-      ? '<div style="flex:none;width:130px;border-radius:18px;overflow:hidden;background:rgba(238,244,251,.06);background-image:url(\'' + r.photo + '\');background-size:cover;background-position:center"></div>'
-      : '';
-    return (
-      '<article' + (ariaHidden ? ' aria-hidden="true"' : '') + ' style="flex:none;box-sizing:border-box;height:240px;margin-bottom:18px;display:flex;gap:18px;padding:24px;border-radius:24px;background:rgba(238,244,251,.05);border:1px solid rgba(238,244,251,.13)">' +
-        '<div style="flex:1;min-width:0;display:flex;flex-direction:column">' +
-          '<div style="display:flex;align-items:center;gap:12px">' +
-            '<span style="display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:999px;background:rgba(84,216,240,.16);font-family:\'Caprasimo\',cursive;font-size:16px;color:#54d8f0">' + escapeHtml(initial) + '</span>' +
-            '<span style="font-size:15px;font-weight:500;color:#fff">' + escapeHtml(r.name) + '</span>' +
-          '</div>' +
-          '<div style="margin-top:10px;font-size:16px;line-height:1;color:#ffd166;letter-spacing:.06em">' + stars + '</div>' +
-          '<p style="flex:1;margin:12px 0 0;font-size:14.5px;font-weight:300;line-height:1.55;color:rgba(238,244,251,.86);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5">' + escapeHtml(r.text) + '</p>' +
-        '</div>' +
-        photoHtml +
-      '</article>'
-    );
+  function uploadPhoto(file) {
+    return shrinkPhoto(file).then(function (blob) {
+      var path = Date.now() + '-' + Math.random().toString(36).slice(2, 10) + '.jpg';
+      return fetch(SUPABASE_URL + '/storage/v1/object/' + PHOTO_BUCKET + '/' + path, {
+        method: 'POST',
+        headers: dbHeaders({ 'Content-Type': 'image/jpeg' }),
+        body: blob
+      }).then(function (res) {
+        if (!res.ok) throw new Error('No se pudo subir la foto (HTTP ' + res.status + ')');
+        return SUPABASE_URL + '/storage/v1/object/public/' + PHOTO_BUCKET + '/' + path;
+      });
+    });
   }
 
-  function renderReviews() {
-    var all = extraReviews.concat(MM_SEED);
-    var track = document.getElementById('reviewsTrack');
-    var html = all.map(function (r) { return reviewCardHtml(r, false); }).join('');
-    html += all.map(function (r) { return reviewCardHtml(r, true); }).join('');
-    track.innerHTML = html;
-
-    var avg = all.reduce(function (s, r) { return s + r.rating; }, 0) / all.length;
-    document.getElementById('avgRating').textContent = avg.toFixed(1).replace('.', ',');
-    document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
-    document.getElementById('reviewCount').textContent = all.length + ' reseñas';
+  function saveReview(photoUrl) {
+    return fetch(SUPABASE_URL + '/rest/v1/reviews', {
+      method: 'POST',
+      headers: dbHeaders({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }),
+      body: JSON.stringify({
+        name: state.name.trim().slice(0, 80) || 'Cliente M+',
+        rating: state.rating,
+        body: state.review.trim().slice(0, 600),
+        photo_url: photoUrl || null
+      })
+    }).then(function (res) {
+      if (!res.ok) throw new Error('No se pudo guardar la reseña (HTTP ' + res.status + ')');
+    });
   }
 
-  var state = { rating: 0, hover: 0, name: '', review: '', photo: '' };
+  /* --- Formulario ------------------------------------------------------------ */
+
+  var state = { rating: 0, hover: 0, name: '', review: '', photoFile: null, sending: false };
   var starButtons = Array.prototype.slice.call(document.querySelectorAll('.star-btn'));
   var ratingLabel = document.getElementById('ratingLabel');
   var sendBtn = document.getElementById('sendBtn');
   var sendHint = document.getElementById('sendHint');
+  var sendError = document.getElementById('sendError');
   var starRow = document.getElementById('starRow');
 
   function updateStars() {
@@ -398,13 +533,19 @@
   }
 
   function updateSendState() {
-    var canSend = state.review.trim().length > 0 && state.rating > 0;
+    var canSend = state.review.trim().length > 0 && state.rating > 0 && !state.sending;
     sendBtn.disabled = !canSend;
     sendBtn.style.cursor = canSend ? 'pointer' : 'not-allowed';
     sendBtn.style.opacity = canSend ? '1' : '0.4';
+    sendBtn.textContent = state.sending ? 'Enviando…' : 'Enviar reseña';
     sendHint.textContent = state.rating === 0
       ? 'Elegí un puntaje y escribí tu reseña para poder enviar.'
       : (state.review.trim().length === 0 ? 'Escribí una reseña corta para poder enviar.' : '');
+  }
+
+  function showError(msg) {
+    sendError.textContent = msg;
+    sendError.style.display = msg ? 'block' : 'none';
   }
 
   starButtons.forEach(function (btn, i) {
@@ -417,29 +558,43 @@
   document.getElementById('reviewText').addEventListener('input', function (e) { state.review = e.target.value; updateSendState(); });
   document.getElementById('reviewPhoto').addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0];
-    if (f) {
-      state.photo = URL.createObjectURL(f);
-      document.getElementById('photoLabel').textContent = f.name;
-    }
+    if (!f) return;
+    if (!/^image\//.test(f.type)) { showError('El archivo tiene que ser una imagen.'); return; }
+    showError('');
+    state.photoFile = f;
+    document.getElementById('photoLabel').textContent = f.name;
   });
 
   sendBtn.addEventListener('click', function () {
-    if (!state.review.trim() || !state.rating) return;
-    extraReviews = [{
-      name: state.name.trim() || 'Cliente M+',
-      rating: state.rating,
-      text: state.review.trim(),
-      photo: state.photo
-    }].concat(extraReviews);
-    renderReviews();
+    if (!state.review.trim() || !state.rating || state.sending) return;
 
-    document.getElementById('sentStars').textContent = '★'.repeat(state.rating) + '☆'.repeat(5 - state.rating);
-    document.getElementById('reviewForm').style.display = 'none';
-    document.getElementById('reviewSent').style.display = 'block';
+    if (!dbReady()) {
+      showError('La web todavía no está conectada a la base de reseñas. Escribinos por WhatsApp y la cargamos nosotros.');
+      return;
+    }
+
+    state.sending = true;
+    updateSendState();
+    showError('');
+
+    var step = state.photoFile ? uploadPhoto(state.photoFile) : Promise.resolve('');
+    step
+      .then(function (photoUrl) { return saveReview(photoUrl); })
+      .then(function () {
+        document.getElementById('sentStars').textContent = '★'.repeat(state.rating) + '☆'.repeat(5 - state.rating);
+        document.getElementById('reviewForm').style.display = 'none';
+        document.getElementById('reviewSent').style.display = 'block';
+      })
+      .catch(function (err) {
+        console.error(err);
+        state.sending = false;
+        updateSendState();
+        showError('No pudimos enviar tu reseña. Probá de nuevo en un rato o escribinos por WhatsApp.');
+      });
   });
 
   buildCarousel();
-  renderReviews();
+  loadReviews();
   updateStars();
   updateSendState();
 })();
