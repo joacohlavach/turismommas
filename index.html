@@ -93,7 +93,17 @@
   .mm-marca-nombre{font-family:var(--mm-titulo);font-weight:400;font-size:19px;letter-spacing:.2px;color:#fff}
   .mm-marca-sub{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#54d8f0}
   .mm-nav{display:flex;align-items:center;gap:34px}
+  .mm-nav .nav-link.on{color:#54d8f0}
   .mm-cta{order:3}
+
+  /* Celdas del carrusel del hero. El fondo azul evita el hueco negro si una
+     foto todavía no llegó, y el fundido hace que entren sin golpe. */
+  .mm-foto{flex:none;width:var(--mm-photo-w);position:relative;overflow:hidden;background:#0f1742}
+  .mm-foto img{width:100%;height:100%;object-fit:cover;display:block;
+    opacity:0;transition:opacity .6s ease}
+  .mm-foto img.cargada{opacity:1}
+  .mm-resena-foto img{opacity:0;transition:opacity .5s ease}
+  .mm-resena-foto img.cargada{opacity:1}
 
   /* --- Tarjetas del carrusel de reseñas ------------------------------------
      Alto fijo a propósito: todas miden igual tengan foto o no. */
@@ -551,26 +561,64 @@
     return a;
   }
 
-  // Cuántas fotos se ven de entrada. El resto se descargan recién cuando el
-  // carrusel las va acercando, así abrir la web no cuesta bajar 15 fotos.
+  // Cuántas fotos entran en la carga inicial. Las demás se piden apenas la
+  // página terminó de cargar, mucho antes de que el carrusel llegue a ellas.
   var FOTOS_INMEDIATAS = 3;
+
+  // Pide la foto y la revela cuando llegó. Si falla, la revela igual: mejor
+  // el fondo azul que una celda que nunca se muestra.
+  function cargarFoto(img, src) {
+    var revelar = function () { img.classList.add('cargada'); };
+    img.addEventListener('load', revelar, { once: true });
+    img.addEventListener('error', revelar, { once: true });
+    img.src = src;
+    if (img.complete && img.naturalWidth) revelar();   // ya estaba en la caché
+  }
 
   function buildCarousel() {
     var order = shuffled(MM_PHOTOS);
     var track = document.getElementById('mmTrack');
-    var html = '';
-    [order, order].forEach(function (half, idx) {
-      html += '<div style="display:flex;flex:none"' + (idx === 1 ? ' aria-hidden="true"' : '') + '>';
-      half.forEach(function (src, i) {
-        var alEntrar = idx === 1 || i >= FOTOS_INMEDIATAS;
-        html += '<div style="flex:none;width:var(--mm-photo-w);position:relative;overflow:hidden">' +
-          '<img src="' + src + '" alt="" decoding="async"' +
-          (alEntrar ? ' loading="lazy"' : ' fetchpriority="high"') +
-          ' style="width:100%;height:100%;object-fit:cover;display:block"></div>';
+    track.textContent = '';
+
+    [0, 1].forEach(function (mitad) {
+      var half = document.createElement('div');
+      half.style.cssText = 'display:flex;flex:none';
+      if (mitad === 1) half.setAttribute('aria-hidden', 'true');
+
+      order.forEach(function (src, i) {
+        var celda = document.createElement('div');
+        celda.className = 'mm-foto';
+        var img = document.createElement('img');
+        img.alt = '';
+        img.decoding = 'async';
+        if (mitad === 0 && i < FOTOS_INMEDIATAS) {
+          img.setAttribute('fetchpriority', 'high');
+          cargarFoto(img, src);
+        } else {
+          img.dataset.src = src;                        // se pide en la segunda fase
+        }
+        celda.appendChild(img);
+        half.appendChild(celda);
       });
-      html += '</div>';
+      track.appendChild(half);
     });
-    track.innerHTML = html;
+  }
+
+  /* Segunda fase: se piden TODAS las fotos que faltan.
+     Antes iban con loading="lazy", y ahí estaba el problema: esa carga se
+     dispara cuando el navegador recalcula qué está a la vista, cosa que hace
+     al scrollear. Pero acá las fotos se mueven solas por una animación con la
+     pantalla quieta, así que el navegador no las pedía y el carrusel quedaba
+     en negro hasta que algo lo despertaba. */
+  function precargarResto() {
+    // Incluye las fotos de las reseñas, que también quedan en espera mientras
+    // carga lo que se ve primero.
+    var faltan = document.querySelectorAll('img[data-src]');
+    Array.prototype.forEach.call(faltan, function (img) {
+      var src = img.dataset.src;
+      img.removeAttribute('data-src');
+      cargarFoto(img, src);
+    });
   }
 
   var MM_LABELS = ['', 'Podemos mejorar', 'Estuvo bien', 'Buena experiencia', 'Muy buena', '¡Excelente!'];
@@ -634,8 +682,12 @@
       var frame = el('div', 'mm-resena-foto');
       var img = el('img');
       img.alt = '';
-      img.loading = 'lazy';
-      img.src = photo;
+      // Sin loading="lazy": estas tarjetas también se mueven solas dentro del
+      // carrusel vertical, y ahí esa carga no se dispara (quedaban en blanco).
+      // Si la página todavía está cargando, la foto espera a la segunda fase
+      // para no competir con lo que se ve primero.
+      if (document.readyState === 'complete') cargarFoto(img, photo);
+      else img.dataset.src = photo;
       frame.appendChild(img);
       card.appendChild(frame);
     }
@@ -731,8 +783,25 @@
     return real.concat(seeds.slice(0, MIN_REVIEWS - real.length));
   }
 
+  // Para no rehacer el carrusel al pedo si la base devuelve lo mismo que ya
+  // está en pantalla (rehacerlo reinicia la animación y se ve el salto).
+  function firma(list) {
+    return list.map(function (r) { return r.name + '|' + r.rating + '|' + r.body.length; }).join('~');
+  }
+  var firmaActual = '';
+
+  function renderSiCambio(list) {
+    var f = firma(list);
+    if (f === firmaActual) return;
+    firmaActual = f;
+    renderReviews(list);
+  }
+
   function loadReviews() {
-    if (!dbReady()) { renderReviews(SEED_FALLBACK); return; }
+    // Las de ejemplo se pintan YA. Antes la sección quedaba vacía hasta que
+    // contestaba la base, y con conexión lenta parecía que no había nada.
+    renderSiCambio(SEED_FALLBACK);
+    if (!dbReady()) return;
 
     fetch(SUPABASE_URL + '/rest/v1/reviews?select=name,rating,body,photo_url,is_seed&approved=eq.true&order=created_at.desc', { headers: dbHeaders() })
       .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error('HTTP ' + res.status)); })
@@ -740,11 +809,11 @@
         var list = pickVisible(rows.map(function (r) {
           return { name: r.name, rating: r.rating, body: r.body, photo: r.photo_url || '', isSeed: r.is_seed };
         }));
-        renderReviews(list.length ? list : SEED_FALLBACK);
+        if (list.length) renderSiCambio(list);
       })
       .catch(function (err) {
-        console.warn('No se pudieron traer las reseñas, muestro las de ejemplo:', err);
-        renderReviews(SEED_FALLBACK);
+        // No pasa nada: ya están las de ejemplo en pantalla.
+        console.warn('No se pudieron traer las reseñas de la base:', err);
       });
   }
 
@@ -895,28 +964,48 @@
     new IntersectionObserver(function (ents) {
       wa.classList.toggle('visible', !ents[0].isIntersecting);
     }).observe(hero);
+  }
 
-    // Marca en el menú la sección que estás mirando
-    var espia = new IntersectionObserver(function (ents) {
-      ents.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        var destino = '#' + en.target.id;
-        enlacesNav.forEach(function (a) {
-          a.classList.toggle('on', a.getAttribute('href') === destino);
-        });
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
+  /* Marca en el menú la sección que estás mirando.
+     Se recalcula desde cero en cada scroll en vez de ir marcando la que entra:
+     así, cuando volvés al hero (que no es ninguna de las tres) o bajás hasta
+     el contacto, no queda pegada la última que pasó. */
+  var secciones = ['quienes', 'hacemos', 'resenas']
+    .map(function (id) { return document.getElementById(id); })
+    .filter(Boolean);
 
-    ['quienes', 'hacemos', 'resenas'].forEach(function (id) {
-      var sec = document.getElementById(id);
-      if (sec) espia.observe(sec);
+  var marcadoPedido = false;
+
+  function marcarSeccion() {
+    marcadoPedido = false;
+    var linea = window.innerHeight * 0.35;   // altura de referencia en pantalla
+    var activa = null;
+    secciones.forEach(function (sec) {
+      var r = sec.getBoundingClientRect();
+      if (r.top <= linea && r.bottom > linea) activa = sec.id;
+    });
+    enlacesNav.forEach(function (a) {
+      a.classList.toggle('on', !!activa && a.getAttribute('href') === '#' + activa);
     });
   }
+
+  function pedirMarcado() {
+    if (marcadoPedido) return;
+    marcadoPedido = true;
+    requestAnimationFrame(marcarSeccion);
+  }
+
+  window.addEventListener('scroll', pedirMarcado, { passive: true });
+  window.addEventListener('resize', pedirMarcado);
 
   buildCarousel();
   loadReviews();
   updateStars();
   updateSendState();
+  marcarSeccion();
+
+  if (document.readyState === 'complete') precargarResto();
+  else window.addEventListener('load', precargarResto);
 })();
 </script>
 </body>
