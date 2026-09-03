@@ -45,10 +45,8 @@
   ::selection{background:#54d8f0;color:#162053}
   :focus-visible{outline:2px solid #54d8f0;outline-offset:3px}
 
-  @keyframes mmSlide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
   @keyframes mmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
   @keyframes mmFade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  @keyframes mmUp{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
   @keyframes mmGlow{0%,100%{box-shadow:0 0 0 0 rgba(84,216,240,.35)}50%{box-shadow:0 0 0 9px rgba(84,216,240,0)}}
 
   .nav-link{font-size:14px;font-weight:400;white-space:nowrap;color:rgba(238,244,251,.82)}
@@ -265,7 +263,7 @@
   <section data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden">
 
     <div style="position:absolute;inset:0;display:flex;align-items:stretch">
-      <div id="mmTrack" style="display:flex;width:max-content;animation:mmSlide var(--mm-speed) linear infinite;will-change:transform"></div>
+      <div id="mmTrack" style="display:flex;will-change:transform"></div>
     </div>
 
     <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(15,23,66,var(--mm-veil)) 0%,rgba(15,23,66,0.86) 38%,rgba(15,23,66,0.5) 68%,rgba(15,23,66,0.72) 100%)"></div>
@@ -426,7 +424,7 @@
         </div>
       </div>
       <div class="mm-resenas-caja" style="position:relative;height:min(560px,70vh);overflow:hidden;mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)">
-        <div id="reviewsTrack" style="display:flex;flex-direction:column;animation:mmUp var(--mm-rev-speed) linear infinite;will-change:transform"></div>
+        <div id="reviewsTrack" style="display:flex;flex-direction:column;will-change:transform"></div>
       </div>
     </div>
   </section>
@@ -561,9 +559,21 @@
     return a;
   }
 
-  // Cuántas fotos entran en la carga inicial. Las demás se piden apenas la
-  // página terminó de cargar, mucho antes de que el carrusel llegue a ellas.
-  var FOTOS_INMEDIATAS = 3;
+  /* ==========================================================================
+     CARRUSELES
+
+     Los dos se mueven desde JavaScript, cuadro a cuadro, y no con animaciones
+     de CSS como antes. El motivo: para animar, el navegador arma una "capa"
+     con el elemento entero. El carrusel del hero tenía las 30 fotos en el DOM,
+     o sea una capa de 11.700 px de ancho — 35.100 en píxeles reales de un
+     celular. Eso pasa el límite de textura de la GPU de un teléfono, y ahí
+     Safari abandona la composición: la animación quedaba congelada (y se
+     llevaba puesta también a la de reseñas).
+
+     Ahora el hero mantiene apenas 4 o 5 celdas en pantalla y las va reciclando:
+     la que sale por la izquierda vuelve al final con la foto siguiente. La capa
+     pasa a medir poco más que la pantalla y el problema desaparece.
+     ========================================================================== */
 
   // Pide la foto y la revela cuando llegó. Si falla, la revela igual: mejor
   // el fondo azul que una celda que nunca se muestra.
@@ -575,51 +585,127 @@
     if (img.complete && img.naturalWidth) revelar();   // ya estaba en la caché
   }
 
-  function buildCarousel() {
-    var order = shuffled(MM_PHOTOS);
-    var track = document.getElementById('mmTrack');
-    track.textContent = '';
-
-    [0, 1].forEach(function (mitad) {
-      var half = document.createElement('div');
-      half.style.cssText = 'display:flex;flex:none';
-      if (mitad === 1) half.setAttribute('aria-hidden', 'true');
-
-      order.forEach(function (src, i) {
-        var celda = document.createElement('div');
-        celda.className = 'mm-foto';
-        var img = document.createElement('img');
-        img.alt = '';
-        img.decoding = 'async';
-        if (mitad === 0 && i < FOTOS_INMEDIATAS) {
-          img.setAttribute('fetchpriority', 'high');
-          cargarFoto(img, src);
-        } else {
-          img.dataset.src = src;                        // se pide en la segunda fase
-        }
-        celda.appendChild(img);
-        half.appendChild(celda);
-      });
-      track.appendChild(half);
-    });
-  }
-
-  /* Segunda fase: se piden TODAS las fotos que faltan.
-     Antes iban con loading="lazy", y ahí estaba el problema: esa carga se
-     dispara cuando el navegador recalcula qué está a la vista, cosa que hace
-     al scrollear. Pero acá las fotos se mueven solas por una animación con la
-     pantalla quieta, así que el navegador no las pedía y el carrusel quedaba
-     en negro hasta que algo lo despertaba. */
+  // Deja las fotos en la caché del navegador para que al reciclar una celda la
+  // foto aparezca al instante. Se hace después de load, sin apurar la primera
+  // pintada.
   function precargarResto() {
-    // Incluye las fotos de las reseñas, que también quedan en espera mientras
-    // carga lo que se ve primero.
-    var faltan = document.querySelectorAll('img[data-src]');
-    Array.prototype.forEach.call(faltan, function (img) {
+    MM_PHOTOS.forEach(function (src) { new Image().src = src; });
+    var enEspera = document.querySelectorAll('img[data-src]');
+    Array.prototype.forEach.call(enEspera, function (img) {
       var src = img.dataset.src;
       img.removeAttribute('data-src');
       cargarFoto(img, src);
     });
   }
+
+  var hero = {
+    track: document.getElementById('mmTrack'),
+    celdas: [], orden: [], prox: 0, x: 0, ancho: 0, vel: 0
+  };
+
+  function buildCarousel() {
+    hero.orden = shuffled(MM_PHOTOS);
+    hero.prox = 0;
+    hero.x = 0;
+    hero.celdas = [];
+    hero.track.textContent = '';
+    hero.track.style.transform = 'translate3d(0,0,0)';
+
+    // Una celda de prueba para saber cuánto mide --mm-photo-w en píxeles
+    var muestra = document.createElement('div');
+    muestra.className = 'mm-foto';
+    hero.track.appendChild(muestra);
+    hero.ancho = muestra.getBoundingClientRect().width || window.innerWidth;
+    hero.track.removeChild(muestra);
+
+    // Las que entran en pantalla, más una de reserva a cada lado
+    var cuantas = Math.ceil(window.innerWidth / hero.ancho) + 2;
+
+    for (var i = 0; i < cuantas; i++) {
+      var celda = document.createElement('div');
+      celda.className = 'mm-foto';
+      var img = document.createElement('img');
+      img.alt = '';
+      img.decoding = 'async';
+      if (i === 0) img.setAttribute('fetchpriority', 'high');
+      cargarFoto(img, hero.orden[hero.prox]);
+      hero.prox = (hero.prox + 1) % hero.orden.length;
+      celda.appendChild(img);
+      hero.track.appendChild(celda);
+      hero.celdas.push(celda);
+    }
+
+    // Velocidad: se conserva el ritmo que ya tenía --mm-speed, que expresa
+    // cuánto tarda en pasar la tanda completa de fotos.
+    var ciclo = parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue('--mm-speed')) || 46;
+    hero.vel = hero.ancho / (ciclo / MM_PHOTOS.length);   // px por segundo
+  }
+
+  // La celda que salió de pantalla vuelve al final con la foto siguiente
+  function reciclarCelda() {
+    var celda = hero.celdas.shift();
+    var img = celda.querySelector('img');
+    img.classList.remove('cargada');
+    cargarFoto(img, hero.orden[hero.prox]);
+    hero.prox = (hero.prox + 1) % hero.orden.length;
+    hero.track.appendChild(celda);
+    hero.celdas.push(celda);
+  }
+
+  var resenas = { track: document.getElementById('reviewsTrack'), y: 0, vel: 0 };
+  var panelAbierto = false;
+
+  // Respetamos "Reducir movimiento" del sistema: si está activado, las fotos
+  // quedan quietas a propósito.
+  var quietoPorPreferencia = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var previo = 0;
+  function latido(ts) {
+    requestAnimationFrame(latido);
+    if (quietoPorPreferencia) return;
+
+    var dt = previo ? Math.min(ts - previo, 120) / 1000 : 0;   // tope por si volvió de segundo plano
+    previo = ts;
+    if (!dt || document.hidden) return;
+
+    // Hero
+    if (hero.ancho) {
+      hero.x -= hero.vel * dt;
+      var vueltas = 0;
+      while (hero.x <= -hero.ancho && vueltas++ < 10) {
+        hero.x += hero.ancho;
+        reciclarCelda();
+      }
+      hero.track.style.transform = 'translate3d(' + hero.x.toFixed(2) + 'px,0,0)';
+    }
+
+    // Reseñas: las tarjetas están duplicadas, así que al recorrer media altura
+    // se vuelve a cero y el empalme no se nota.
+    if (!panelAbierto && resenas.vel) {
+      var mitad = resenas.track.scrollHeight / 2;
+      if (mitad > 0) {
+        resenas.y -= resenas.vel * dt;
+        if (resenas.y <= -mitad) resenas.y += mitad;
+        resenas.track.style.transform = 'translate3d(0,' + resenas.y.toFixed(2) + 'px,0)';
+      }
+    }
+  }
+
+  function ritmoResenas() {
+    var seg = parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue('--mm-rev-speed')) || 34;
+    var mitad = resenas.track.scrollHeight / 2;
+    resenas.vel = mitad > 0 ? mitad / seg : 0;
+  }
+
+  // Al cambiar el ancho cambia --mm-photo-w, así que hay que rehacer el hero
+  var reajuste;
+  window.addEventListener('resize', function () {
+    clearTimeout(reajuste);
+    reajuste = setTimeout(function () { buildCarousel(); ritmoResenas(); }, 200);
+  });
 
   var MM_LABELS = ['', 'Podemos mejorar', 'Estuvo bien', 'Buena experiencia', 'Muy buena', '¡Excelente!'];
 
@@ -722,6 +808,7 @@
     document.getElementById('panelEst').textContent = estrellas;
     document.getElementById('panelCuenta').textContent = cuenta;
     pintarPanel(list);
+    ritmoResenas();   // cambió el alto del riel, se recalcula la velocidad
   }
 
   /* --- Panel con todas las reseñas ------------------------------------------
@@ -732,8 +819,6 @@
   var panelLista = document.getElementById('panelLista');
   var verTodasBtn = document.getElementById('verTodasBtn');
   var cerrarBtn = document.getElementById('cerrarPanel');
-  var revTrack = document.getElementById('reviewsTrack');
-
   function pintarPanel(list) {
     panelLista.textContent = '';
     list.forEach(function (r, i) {
@@ -749,7 +834,7 @@
     panel.hidden = false;
     panel.classList.add('abierto');
     document.body.style.overflow = 'hidden';   // que no se mueva la página de atrás
-    revTrack.style.animationPlayState = 'paused';
+    panelAbierto = true;                       // frena el carrusel de atrás
     panelLista.scrollTop = 0;
     cerrarBtn.focus();
   }
@@ -758,7 +843,7 @@
     panel.classList.remove('abierto');
     panel.hidden = true;
     document.body.style.overflow = '';
-    revTrack.style.animationPlayState = '';
+    panelAbierto = false;
     verTodasBtn.focus();
   }
 
@@ -956,14 +1041,14 @@
      contactar hasta el final de la página. */
 
   var wa = document.getElementById('waFlotante');
-  var hero = document.querySelector('[data-screen-label="Hero"]');
+  var secHero = document.querySelector('[data-screen-label="Hero"]');
   var enlacesNav = Array.prototype.slice.call(document.querySelectorAll('.mm-nav .nav-link'));
 
   if ('IntersectionObserver' in window) {
     // El botón aparece cuando el hero (que ya tiene los suyos) sale de pantalla
     new IntersectionObserver(function (ents) {
       wa.classList.toggle('visible', !ents[0].isIntersecting);
-    }).observe(hero);
+    }).observe(secHero);
   }
 
   /* Marca en el menú la sección que estás mirando.
@@ -1000,6 +1085,7 @@
 
   buildCarousel();
   loadReviews();
+  requestAnimationFrame(latido);
   updateStars();
   updateSendState();
   marcarSeccion();
