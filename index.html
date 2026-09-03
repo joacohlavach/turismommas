@@ -116,13 +116,98 @@
     color:rgba(238,244,251,.55)}
   .mm-tira-linea{flex:1;height:1px;background:rgba(238,244,251,.16)}
 
+  /* --- Acciones de la sección de reseñas ----------------------------------- */
+  .mm-resenas-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+  .mm-btn-todas{display:inline-flex;align-items:center;gap:10px;font-family:var(--mm-titulo);font-size:15px;
+    padding:13px 24px;border-radius:999px;cursor:pointer;color:#162053;background:#54d8f0;border:1.5px solid #54d8f0;
+    transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+  .mm-btn-todas:hover{background:#8ce6f7;border-color:#8ce6f7;transform:translateY(-1px);
+    box-shadow:0 10px 24px rgba(84,216,240,.26)}
+  .mm-btn-todas svg{width:17px;height:17px;flex:none}
+  .mm-btn-todas .cuenta{font-family:var(--mm-texto);font-weight:600;font-size:13px;
+    padding:2px 9px;border-radius:999px;background:rgba(22,32,83,.16)}
+
+  /* --- Panel con todas las reseñas -----------------------------------------
+     En celular sube desde abajo como una hoja; en escritorio aparece centrado. */
+  .mm-panel{position:fixed;inset:0;z-index:60;display:none}
+  .mm-panel.abierto{display:block}
+  .mm-panel-fondo{position:absolute;inset:0;background:rgba(6,11,34,.74);
+    backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:mmEntrar .25s ease both}
+
+  .mm-hoja{position:absolute;left:50%;bottom:0;translate:-50% 0;width:min(760px,100%);max-height:92vh;
+    display:flex;flex-direction:column;overflow:hidden;
+    background:linear-gradient(180deg,#18225a 0%,#131b46 100%);
+    border:1px solid rgba(238,244,251,.15);border-bottom:0;border-radius:30px 30px 0 0;
+    box-shadow:0 -20px 60px rgba(5,9,30,.6);animation:mmSubirHoja .36s cubic-bezier(.22,1,.36,1) both}
+  /* Resplandor cyan en el borde superior, como el del hero */
+  .mm-hoja::before{content:'';position:absolute;left:0;right:0;top:0;height:130px;pointer-events:none;
+    background:radial-gradient(80% 100% at 50% 0,rgba(84,216,240,.16) 0%,rgba(84,216,240,0) 70%)}
+
+  .mm-hoja-agarre{width:44px;height:4px;border-radius:999px;background:rgba(238,244,251,.28);
+    margin:12px auto 0;flex:none}
+  .mm-hoja-head{position:relative;display:flex;align-items:flex-start;gap:16px;
+    padding:18px clamp(20px,4vw,32px) 18px;border-bottom:1px solid rgba(238,244,251,.1);flex:none}
+  .mm-hoja-titulo{font-family:var(--mm-titulo);font-size:clamp(21px,3vw,27px);line-height:1.1;color:#fff}
+  .mm-hoja-sub{display:flex;align-items:center;gap:9px;margin-top:7px;font-size:13.5px;color:rgba(238,244,251,.62)}
+  .mm-hoja-sub b{font-family:var(--mm-titulo);font-weight:400;font-size:17px;color:#fff}
+  .mm-hoja-sub .est{color:#ffd166;letter-spacing:.04em}
+  .mm-hoja-cerrar{margin-left:auto;flex:none;display:grid;place-items:center;width:40px;height:40px;
+    border-radius:999px;border:1px solid rgba(238,244,251,.18);background:rgba(238,244,251,.06);
+    color:#eef4fb;font-size:19px;line-height:1;cursor:pointer;transition:background .18s ease,color .18s ease}
+  .mm-hoja-cerrar:hover{background:#54d8f0;border-color:#54d8f0;color:#162053}
+
+  .mm-hoja-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;padding:20px clamp(20px,4vw,32px) 28px;
+    display:flex;flex-direction:column;gap:14px}
+  .mm-hoja-body::-webkit-scrollbar{width:9px}
+  .mm-hoja-body::-webkit-scrollbar-thumb{background:rgba(84,216,240,.3);border-radius:999px;
+    border:3px solid transparent;background-clip:content-box}
+  .mm-hoja-body::-webkit-scrollbar-thumb:hover{background:rgba(84,216,240,.55);background-clip:content-box}
+
+  /* Las tarjetas del panel: mismo lenguaje, pero sin alto fijo ni texto
+     recortado — acá el punto es poder leerlas enteras. */
+  .mm-resena--libre{height:auto;margin-bottom:0;animation:mmFade .42s ease both}
+  .mm-resena--libre .mm-resena-texto{-webkit-line-clamp:unset;display:block;overflow:visible;flex:0 1 auto}
+  .mm-resena--libre .mm-resena-foto{width:112px;aspect-ratio:3/4;align-self:flex-start}
+
+  @keyframes mmEntrar{from{opacity:0}to{opacity:1}}
+  @keyframes mmSubirHoja{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes mmAparecerHoja{from{transform:scale(.975);opacity:0}to{transform:none;opacity:1}}
+
+  @media (min-width:821px){
+    .mm-hoja{top:50%;bottom:auto;translate:-50% -50%;max-height:84vh;border-radius:30px;
+      border-bottom:1px solid rgba(238,244,251,.15);box-shadow:0 30px 80px rgba(5,9,30,.6);
+      animation:mmAparecerHoja .28s cubic-bezier(.22,1,.36,1) both}
+    .mm-hoja-agarre{display:none}
+    .mm-hoja-head{padding-top:26px}
+  }
+
+  /* --- Botón flotante de WhatsApp ------------------------------------------
+     El encabezado no queda fijo, así que al scrollear en el celular no había
+     ningún modo de contactar hasta el final de la página. */
+  .mm-wa{position:fixed;right:16px;bottom:16px;z-index:50;display:none;align-items:center;gap:9px;
+    padding:13px 20px;border-radius:999px;background:#54d8f0;color:#162053;font-family:var(--mm-titulo);
+    font-size:15px;box-shadow:0 12px 30px rgba(6,11,34,.5);opacity:0;transform:translateY(16px) scale(.96);
+    pointer-events:none;transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1)}
+  .mm-wa.visible{opacity:1;transform:none;pointer-events:auto}
+  .mm-wa svg{width:19px;height:19px;flex:none}
+
   @media (max-width:820px){
     /* 2 fotos a la vez en el carrusel del hero, y más lento para compensar */
     :root{--mm-photo-w:50vw;--mm-speed:70s}
 
-    .mm-header{flex-wrap:wrap;gap:14px;padding-top:20px}
+    /* Los tres links pasan a una píldora de vidrio centrada: así dejan de
+       leerse como un renglón suelto y acompañan el lenguaje redondeado del
+       resto del sitio. La sección en la que estás queda marcada en cyan. */
+    .mm-header{flex-wrap:wrap;gap:13px;padding:20px 5vw 0}
     .mm-cta{order:2}
-    .mm-nav{order:3;width:100%;justify-content:center;gap:22px}
+    .mm-nav{order:3;width:100%;justify-content:center;gap:2px;padding:5px;border-radius:999px;
+      background:rgba(238,244,251,.07);border:1px solid rgba(238,244,251,.13);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    .mm-nav .nav-link{font-size:12.5px;padding:9px 13px;border-radius:999px;
+      transition:background .18s ease,color .18s ease}
+    .mm-nav .nav-link.on{background:rgba(84,216,240,.18);color:#54d8f0}
+    .mm-wa{display:inline-flex}
 
     #quienes>div,#hacemos>div>div:first-child,#resenas>div{grid-template-columns:minmax(0,1fr)!important}
     section[data-screen-label="Contacto"]>div{grid-template-columns:minmax(0,1fr)!important}
@@ -156,6 +241,10 @@
     .mm-nav{gap:16px}
     .nav-link{font-size:13.5px}
     .btn-cyan{font-size:14px;padding:10px 18px}
+
+    /* Foto más chica en el panel: acá lo que importa es el ancho del texto */
+    .mm-resena--libre .mm-resena-foto{width:92px}
+    .mm-btn-todas,.btn-ghost-sm{font-size:14px}
   }
 </style>
 </head>
@@ -314,7 +403,17 @@
           <span id="avgStars" style="font-size:22px;line-height:1;color:#ffd166"></span>
           <span id="reviewCount" style="font-size:13px;color:rgba(238,244,251,.6)"></span>
         </div>
-        <a href="#valoranos" class="btn-ghost-sm" style="margin-top:28px">Dejar la mía</a>
+        <div class="mm-resenas-acciones">
+          <button type="button" id="verTodasBtn" class="mm-btn-todas" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            Ver todas <span class="cuenta" id="verTodasN"></span>
+          </button>
+          <a href="#valoranos" class="btn-ghost-sm">Dejar la mía</a>
+        </div>
       </div>
       <div class="mm-resenas-caja" style="position:relative;height:min(560px,70vh);overflow:hidden;mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)">
         <div id="reviewsTrack" style="display:flex;flex-direction:column;animation:mmUp var(--mm-rev-speed) linear infinite;will-change:transform"></div>
@@ -393,6 +492,32 @@
       <a href="https://wa.link/s9bfbj" class="ig-link">WhatsApp</a>
     </div>
   </footer>
+</div>
+
+<!-- Contacto siempre a mano una vez que pasás el hero (solo en celular) -->
+<a href="https://wa.link/s9bfbj" class="mm-wa" id="waFlotante">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 20.5l1.6-4.9A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"></path>
+  </svg>
+  Escribinos
+</a>
+
+<!-- Todas las reseñas, para leerlas sin esperar el carrusel -->
+<div class="mm-panel" id="panelResenas" role="dialog" aria-modal="true" aria-labelledby="panelTitulo" hidden>
+  <div class="mm-panel-fondo" data-cerrar></div>
+  <div class="mm-hoja">
+    <div class="mm-hoja-agarre"></div>
+    <div class="mm-hoja-head">
+      <div>
+        <div class="mm-hoja-titulo" id="panelTitulo">Reseñas de clientes</div>
+        <div class="mm-hoja-sub">
+          <b id="panelProm"></b><span class="est" id="panelEst"></span><span id="panelCuenta"></span>
+        </div>
+      </div>
+      <button type="button" class="mm-hoja-cerrar" id="cerrarPanel" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="mm-hoja-body" id="panelLista"></div>
+  </div>
 </div>
 
 <script src="config.js"></script>
@@ -531,10 +656,71 @@
     });
 
     var avg = list.reduce(function (s, r) { return s + r.rating; }, 0) / list.length;
-    document.getElementById('avgRating').textContent = avg.toFixed(1).replace('.', ',');
-    document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
-    document.getElementById('reviewCount').textContent = list.length === 1 ? '1 reseña' : list.length + ' reseñas';
+    var prom = avg.toFixed(1).replace('.', ',');
+    var estrellas = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+    var cuenta = list.length === 1 ? '1 reseña' : list.length + ' reseñas';
+
+    document.getElementById('avgRating').textContent = prom;
+    document.getElementById('avgStars').textContent = estrellas;
+    document.getElementById('reviewCount').textContent = cuenta;
+
+    // El panel muestra exactamente las mismas reseñas que el carrusel
+    document.getElementById('verTodasN').textContent = list.length;
+    document.getElementById('panelProm').textContent = prom;
+    document.getElementById('panelEst').textContent = estrellas;
+    document.getElementById('panelCuenta').textContent = cuenta;
+    pintarPanel(list);
   }
+
+  /* --- Panel con todas las reseñas ------------------------------------------
+     El carrusel es lindo pero lento para leer: hay que esperar a que pase cada
+     tarjeta. Acá van todas juntas, scrolleables y con el texto completo. */
+
+  var panel = document.getElementById('panelResenas');
+  var panelLista = document.getElementById('panelLista');
+  var verTodasBtn = document.getElementById('verTodasBtn');
+  var cerrarBtn = document.getElementById('cerrarPanel');
+  var revTrack = document.getElementById('reviewsTrack');
+
+  function pintarPanel(list) {
+    panelLista.textContent = '';
+    list.forEach(function (r, i) {
+      var card = reviewCard(r);
+      card.classList.add('mm-resena--libre');
+      // Aparecen escalonadas, con tope para que las últimas no se hagan esperar
+      card.style.animationDelay = Math.min(i, 8) * 45 + 'ms';
+      panelLista.appendChild(card);
+    });
+  }
+
+  function abrirPanel() {
+    panel.hidden = false;
+    panel.classList.add('abierto');
+    document.body.style.overflow = 'hidden';   // que no se mueva la página de atrás
+    revTrack.style.animationPlayState = 'paused';
+    panelLista.scrollTop = 0;
+    cerrarBtn.focus();
+  }
+
+  function cerrarPanel() {
+    panel.classList.remove('abierto');
+    panel.hidden = true;
+    document.body.style.overflow = '';
+    revTrack.style.animationPlayState = '';
+    verTodasBtn.focus();
+  }
+
+  verTodasBtn.addEventListener('click', abrirPanel);
+  cerrarBtn.addEventListener('click', cerrarPanel);
+  panel.addEventListener('click', function (e) {
+    if (e.target.hasAttribute('data-cerrar')) cerrarPanel();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!panel.classList.contains('abierto')) return;
+    if (e.key === 'Escape') { cerrarPanel(); return; }
+    // Con el panel abierto, el tabulador no debería irse a la página de atrás
+    if (e.key === 'Tab') { e.preventDefault(); cerrarBtn.focus(); }
+  });
 
   /* Las de ejemplo solo rellenan hasta MIN_REVIEWS: cuando hay suficientes
      reseñas reales aprobadas, dejan de aparecer solas. */
@@ -695,6 +881,37 @@
         showError('No pudimos enviar tu reseña. Probá de nuevo en un rato o escribinos por WhatsApp.');
       });
   });
+
+  /* --- Sección activa en el menú y botón flotante de WhatsApp ---------------
+     El encabezado no queda fijo: al scrollear en el celular no había forma de
+     contactar hasta el final de la página. */
+
+  var wa = document.getElementById('waFlotante');
+  var hero = document.querySelector('[data-screen-label="Hero"]');
+  var enlacesNav = Array.prototype.slice.call(document.querySelectorAll('.mm-nav .nav-link'));
+
+  if ('IntersectionObserver' in window) {
+    // El botón aparece cuando el hero (que ya tiene los suyos) sale de pantalla
+    new IntersectionObserver(function (ents) {
+      wa.classList.toggle('visible', !ents[0].isIntersecting);
+    }).observe(hero);
+
+    // Marca en el menú la sección que estás mirando
+    var espia = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var destino = '#' + en.target.id;
+        enlacesNav.forEach(function (a) {
+          a.classList.toggle('on', a.getAttribute('href') === destino);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+
+    ['quienes', 'hacemos', 'resenas'].forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) espia.observe(sec);
+    });
+  }
 
   buildCarousel();
   loadReviews();
