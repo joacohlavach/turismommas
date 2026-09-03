@@ -191,14 +191,22 @@
   }
 
   /* --- Botón flotante de WhatsApp ------------------------------------------
-     El encabezado no queda fijo, así que al scrollear en el celular no había
-     ningún modo de contactar hasta el final de la página. */
-  .mm-wa{position:fixed;right:16px;bottom:16px;z-index:50;display:none;align-items:center;gap:9px;
-    padding:13px 20px;border-radius:999px;background:#54d8f0;color:#162053;font-family:var(--mm-titulo);
-    font-size:15px;box-shadow:0 12px 30px rgba(6,11,34,.5);opacity:0;transform:translateY(16px) scale(.96);
-    pointer-events:none;transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1)}
+     El encabezado no queda fijo, así que al scrollear no hay ningún modo de
+     contactar hasta el final de la página. Aparece al pasar el hero, que ya
+     tiene sus propios botones. */
+  .mm-wa{position:fixed;right:24px;bottom:24px;z-index:50;display:inline-flex;align-items:center;gap:10px;
+    padding:15px 24px;border-radius:999px;background:#54d8f0;color:#162053;font-family:var(--mm-titulo);
+    font-size:16px;box-shadow:0 12px 34px rgba(6,11,34,.5);opacity:0;transform:translateY(16px) scale(.96);
+    pointer-events:none;transition:opacity .3s ease,transform .3s cubic-bezier(.22,1,.36,1),
+    background .18s ease,box-shadow .18s ease}
   .mm-wa.visible{opacity:1;transform:none;pointer-events:auto}
-  .mm-wa svg{width:19px;height:19px;flex:none}
+  .mm-wa.visible:hover{background:#8ce6f7;transform:translateY(-2px);
+    box-shadow:0 18px 40px rgba(6,11,34,.55)}
+  .mm-wa svg{width:20px;height:20px;flex:none}
+
+  @media (max-width:820px){
+    .mm-wa{right:16px;bottom:16px;padding:13px 20px;font-size:15px}
+  }
 
   @media (max-width:820px){
     /* 2 fotos a la vez en el carrusel del hero, y más lento para compensar */
@@ -215,7 +223,6 @@
     .mm-nav .nav-link{font-size:12.5px;padding:9px 13px;border-radius:999px;
       transition:background .18s ease,color .18s ease}
     .mm-nav .nav-link.on{background:rgba(84,216,240,.18);color:#54d8f0}
-    .mm-wa{display:inline-flex}
 
     #quienes>div,#hacemos>div>div:first-child,#resenas>div{grid-template-columns:minmax(0,1fr)!important}
     section[data-screen-label="Contacto"]>div{grid-template-columns:minmax(0,1fr)!important}
